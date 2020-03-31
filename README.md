@@ -1,2 +1,6 @@
 # softdesFinal
-Work for Mini-Project
+# IDeas
+
+### Asteroids 3d, or computer player
+### Photo Library
+### 
