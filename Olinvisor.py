@@ -20,6 +20,7 @@ class Course:
     """
     def __init__(self):
     # Maybe there should be a list of credit types, that are passes
+        self.crn = 
         self.mth_crds = 
         self.sci_crds =
         self.ahs_crds = 
