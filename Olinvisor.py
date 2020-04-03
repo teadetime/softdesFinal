@@ -17,10 +17,12 @@ class Olin:
 class Course:
     """
     this object defines a course, credits, offering times
+    use bs4 to scrape: https://olin.smartcatalogiq.com/2019-20/Catalog/Courses-Credits-Hours/ENGR-Engineering
     """
     def __init__(self):
     # Maybe there should be a list of credit types, that are passes
         self.crn = 
+        self.pre_req = 
         self.mth_crds = 
         self.sci_crds =
         self.ahs_crds = 
