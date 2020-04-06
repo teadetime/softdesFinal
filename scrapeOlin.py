@@ -48,8 +48,11 @@ for group in groupDict:
         # PARSE THE COURSE PAGE!!!!
         print(course)
         course_link = base_link + course.get('href')
+        crn = course_link.split('/')[-1]
+
         link_page = requests.get(course_link)
         soup = bs(link_page.content, 'html.parser')
         credits = soup.find_all('div', attrs={"class": 'credits'})  #
         print(credits[0].getText())
+        # Now process the credits into each section
     break
