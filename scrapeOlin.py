@@ -8,6 +8,35 @@ from pickle import dump, load
 
 # Create a directory to store the Lrics in
 
+
+def parse_cred(credit_div):
+    credit_text = credits[0].getText()
+    split_credits = credit_text.split()
+    # Make sure other characters are taken out!
+    credit_dict = {}
+    # Get number of items in list
+    # Add the course type and then the number of credits
+    print(len(split_credits))
+    for i in range(int(len(split_credits) / 2)):
+        credit_dict[split_credits[i + 1]] = split_credits[i]
+    return credit_dict
+
+
+def parse_req(req_div):
+    req_text = req_div[0].getText()
+    req_text.replace('AND ', '')
+    req_list = req_text.split()
+    return req_list
+
+
+def parse_hrs(hrs_div):
+    pass
+
+
+def build_course_object():
+    pass
+
+
 # Set up Scraping links for Beautiful Soup
 base_link = "https://olin.smartcatalogiq.com/"
 root_link = base_link + "en/2019-20/Catalog/Courses-Credits-Hours"
@@ -55,32 +84,8 @@ for group in groupDict:
         credits = soup.find_all('div', attrs={"class": 'credits'})  #
         
         credit_dict = parse_cred(credits)
-        
+        print(credit_dict)
         # Now process the credits into each section
     break
     
     
-def parse_cred(credit_div):
-    credit_text = credits[0].getText()
-    split_credits = credit_text.split()
-    # Make sure other characters are taken out!
-    credit_dict = {}
-    # Get number of items in list
-    # Add the course type and then the number of credits
-    for i in len(split_credits)/2:
-        credit_dict[split_credits[i+1]] = split_credits[i]
-    return credit_dict
-
-def parse_req(req_div):
-    req_text = req_div[0].getText()
-    req_text.replace('AND ','')
-    req_list = req_text.split()
-    return req_list
-        
-        
-
-def parse_hrs(hrs_div):
-    pass
-
-def build_course_object()??
-    pass
