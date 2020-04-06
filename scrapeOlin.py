@@ -53,6 +53,34 @@ for group in groupDict:
         link_page = requests.get(course_link)
         soup = bs(link_page.content, 'html.parser')
         credits = soup.find_all('div', attrs={"class": 'credits'})  #
-        print(credits[0].getText())
+        
+        credit_dict = parse_cred(credits)
+        
         # Now process the credits into each section
     break
+    
+    
+def parse_cred(credit_div):
+    credit_text = credits[0].getText()
+    split_credits = credit_text.split()
+    # Make sure other characters are taken out!
+    credit_dict = {}
+    # Get number of items in list
+    # Add the course type and then the number of credits
+    for i in len(split_credits)/2:
+        credit_dict[split_credits[i+1]] = split_credits[i]
+    return credit_dict
+
+def parse_req(req_div):
+    req_text = req_div[0].getText()
+    req_text.replace('AND ','')
+    req_list = req_text.split()
+    return req_list
+        
+        
+
+def parse_hrs(hrs_div):
+    pass
+
+def build_course_object()??
+    pass
