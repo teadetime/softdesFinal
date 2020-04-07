@@ -1,7 +1,11 @@
 """
 Main File for Olinvisor, a virtual advisor deisnged for Olin College
 Started 4/2/2020
+<<<<<<< HEAD
 Adi R, Nathan F
+=======
+Adi R, and Nathan F
+>>>>>>> 778d3364e0beb4d6327c5ae891ba7054d406e71e
 """
 class Olin:
     """
@@ -40,17 +44,3 @@ class Schedule:
     def __init__(self, major, ):
         sem_1_fall = COME COURSE
         etc...
-
-
-
-class Major:
-    """
-    This class is used to store information about majors
-    """
-    def __init__(self, name, abs_reqs, **args ):
-        self.name = ''
-        self.abs_reqs = abs_reqs
-        self.one_reqs = []
-        for arg in args:
-            self.one_reqs.append(arg) # list of lists for one required Courses
-        
