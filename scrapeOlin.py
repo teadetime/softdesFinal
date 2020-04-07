@@ -10,28 +10,58 @@ from pickle import dump, load
 
 
 def parse_cred(credit_div):
+    """
+
+    :param credit_div:
+    :return:
+    """
+    if len(credit_div) == 0:
+        return {}
+
     credit_text = credits[0].getText()
+
+    # Check to see if it has parentheses (aka weird split(QEA))
+    if '(' in credit_text:
+        credit_text = credit_text.split('(', 1)[-1].split(')')[0]
+        credit_text.replace(',', '')
+
     split_credits = credit_text.split()
-    # Make sure other characters are taken out!
     credit_dict = {}
-    # Get number of items in list
-    # Add the course type and then the number of credits
-    for i in range(int(len(split_credits) / 2)):
+    # count by twos and iteare through the list
+    for i in range(0, len(split_credits), 2):
         credit_dict[split_credits[i + 1]] = split_credits[i]
     return credit_dict
 
 
 def parse_req(req_div):
-    req_text = req_div[0].getText()
-    # TODO: Check to make sure it has numbers!!
-    req_text.replace('AND ', '')
-    req_list = req_text.split()
+    """
+    Parse requisites for all different types of requisites
+    :param req_div:
+    :return: a list that contains what requisites if any
+    """
+    if len(req_div) == 0 or req_div[0].findChild() is None: # if there is no data or there was no tag found
+        return []
+
+    req_text =req_div[0].contents[-1]
+    # TODO: Test
+    if any(map(str.isdigit, req_text)):
+        req_text = req_text.replace('AND ', '')
+        req_list = req_text.split()
+        # TODO: check to see if commas are ever present
+    else: # this is a different type of requisite, don't string split
+        req_list = [req_text]
+
     return req_list
 
 
 def parse_hrs(hrs_div):
     pass
 
+def parse_info(info_div):
+    if len(info_div) == 0:
+        return ''
+    info = info_div[0].getText()
+    return info
 
 def build_course_object():
     pass
@@ -76,22 +106,32 @@ for group in groupDict:
     for course in classes:
         # PARSE THE COURSE PAGE!!!!
         # course_link = base_link + course.get('href')
-        course_link = "https://olin.smartcatalogiq.com/2019-20/Catalog/Courses-Credits-Hours/ENGR-Engineering/2000/ENGR2110"
+        course_link = "https://olin.smartcatalogiq.com/2019-20/Catalog/Courses-Credits-Hours/ENGR-Engineering/2000/ENGX2000"
         crn = course_link.split('/')[-1]
         print(crn)
         link_page = requests.get(course_link)
         soup = bs(link_page.content, 'html.parser')
-        credits = soup.find_all('div', attrs={"class": 'credits'})  #
-        reqs_co = soup.find_all('div', attrs={"class": 'sc-coReqs'})
-        # reqs_con = soup.find_all('div', attrs={"class": 'credits'})
         reqs_pre = soup.find_all('div', attrs={"class": 'sc-preReqs'})
-        '''reqs_rec = soup.find_all('div', attrs={"class": 'credits'})
-        hours = soup.find_all('div', attrs={"class": 'credits'})
-        info = soup.find_all('div', attrs={"class": 'credits'})'''
-        print(reqs_pre[0].getText().split())
+        credits = soup.find_all('div', attrs={"class": 'credits'})
+        reqs_co = soup.find_all('div', attrs={"class": 'sc-coReqs'})
+        reqs_con = soup.find_all('div', attrs={"class": 'sc-concurrentReqs'})
+        reqs_rec = soup.find_all('div', attrs={"class": 'sc-recommendedReqs'})
+        hours = soup.find_all('div', attrs={"class": 'sc-Attributes'})
+        info = soup.find_all('div', attrs={"class": 'desc'})
+
+        # print(reqs_pre[0].contents[-1]) # Use contents to get the last child!
+
+        reqs_pre_list = parse_req(reqs_pre)
+        reqs_co_list = parse_req(reqs_co)
+        reqs_con_list = parse_req(reqs_con)
+        reqs_rec_list = parse_req(reqs_rec)
+        print("Pre: ",reqs_pre_list)
+        print("Co: ", reqs_co_list)
+        print("Con: ", reqs_con_list)
+        print("Recc: ", reqs_rec_list)
         credit_dict = parse_cred(credits)
-        reqs_co_list = parse_req(reqs_pre)
         print(credit_dict)
+        info_div = parse_info(info)
         # Now process the credits into each section
     break
     
