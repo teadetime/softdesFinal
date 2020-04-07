@@ -82,10 +82,8 @@ for group in groupDict:
         link_page = requests.get(course_link)
         soup = bs(link_page.content, 'html.parser')
         credits = soup.find_all('div', attrs={"class": 'credits'})  #
-        
+
         credit_dict = parse_cred(credits)
         print(credit_dict)
         # Now process the credits into each section
     break
-    
-    
