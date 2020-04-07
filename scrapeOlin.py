@@ -6,6 +6,41 @@ import urllib.request
 import os
 import re
 from pickle import dump, load
+import sys
+
+print(sys.getrecursionlimit())
+sys.setrecursionlimit(10**6)
+print(sys.getrecursionlimit())
+
+def pickle_data(file_path, data, overwrite):
+    """
+    Pickle a specific piece of data in binary. Can be pickled at any directory, will not overwrite current data unless
+        overwite is specified
+    :param file_path: Npath to file to be pickled. Can contain just a file name to pickle in CWD
+    :param data: The data that will be pickled
+    :param overwrite: Boolean that indicates whether the file should be overwritten even if it exists
+    :return: #TODO Nothing currently should return True if succesful
+    """
+    if not os.path.exists(file_path) or overwrite:
+        f = open(file_path, "wb")
+        dump(data, f)
+        f.close()
+
+
+def load_pickle_data(file_path):
+    """
+    Unpickles data stored at a given file path (or filename in CWD) and returns it
+    :param file_path: path to file that is to be un-pickled (can be file name for items in CWD)
+    :return: Returns None or that data that was stored in pickle form at the location
+    """
+    # Initialize data so that None is returned if file path doesn't work
+    pickled_data = None
+    if os.path.exists(file_path):
+        f = open(file_path, "rb+")
+        pickled_data = load(f)
+        f.close()
+    return pickled_data
+
 
 def parse_credit_dict(credit_dictionary):
     """
@@ -37,6 +72,7 @@ def parse_credit_dict(credit_dictionary):
             sus_crd += credits
     return None
 
+
 def course_dict(crn, pre_req, co_req, con_req, rec_req, desc, credit_dict, hours, term_requirement=None,
                 grade_limit=None, size=32, fall=True, spring=True):
     course = {'crn': crn, 'desc': desc, 'pre_req': pre_req, 'hours': hours, 'term_requirement': term_requirement,
@@ -54,17 +90,23 @@ def parse_cred(credit_div):
     if len(credit_div) == 0:
         return {}
 
-    credit_text = credits[0].getText()
+    credit_text = credits[0].getText().lower()
+    if not bool(re.search(r'\d', credit_text)):
+        # then this is likely a special topics class with variable credits
+        credit_text.replace('variable credits', '')
+        return {credit_text: 4, 'flagged': True}
     # Check to see if it has parentheses (aka weird split(QEA))
     if '(' in credit_text:
         credit_text = credit_text.split('(', 1)[-1].split(')')[0]
         credit_text.replace(',', '')
 
     split_credits = credit_text.split()
+    if len(split_credits)%2 != 0:
+        return {'elec': int(split_credits[0])}
     credit_dict = {}
     # count by twos and iteare through the list
     for i in range(0, len(split_credits), 2):
-        credit_dict[split_credits[i + 1].lower()] = int(split_credits[i])
+        credit_dict[split_credits[i + 1]] = int(split_credits[i])
     return credit_dict
 
 
@@ -115,14 +157,14 @@ def parse_info(info_div):
     return info
 
 
-
 # Set up Scraping links for Beautiful Soup
 base_link = "https://olin.smartcatalogiq.com/"
 root_link = base_link + "en/2019-20/Catalog/Courses-Credits-Hours"
 # Extract the contents of the link
 link_page = requests.get(root_link)
 soup = bs(link_page.content, 'html.parser')
-groups = soup.find_all('a', attrs={"href": re.compile('Catalog/Courses-Credits-Hours/')})  #
+right_pnl = soup.find_all('div', attrs={"id": 'rightpanel'})
+groups = right_pnl[0].find_all('a', attrs={"href": re.compile('Catalog/Courses-Credits-Hours/')})  #
 print(groups)
 # Now lets put those urls into a dictionary
 groupDict = []
@@ -154,15 +196,11 @@ for group in groupDict:
     for course in classes:
         # PARSE THE COURSE PAGE!!!!
         course_link = base_link + course.get('href')
-        # course_link = "https://olin.smartcatalogiq.com/2019-20/Catalog/Courses-Credits-Hours/ENGR-Engineering/2000/ENGX2000" # Test an individual site!
+        #course_link = "https://olin.smartcatalogiq.com/en/2019-20/Catalog/Courses-Credits-Hours/OIE-Olin-Intro-Experience/1000/OIE1000" # Test an individual site!
         crn = course_link.split('/')[-1]
         print(crn)
         link_page = requests.get(course_link)
         soup = bs(link_page.content, 'html.parser')
-<<<<<<< HEAD
-        credits = soup.find_all('div', attrs={"class": 'credits'})  #
-
-=======
         reqs_pre = soup.find_all('div', attrs={"class": 'sc-preReqs'})
         credits = soup.find_all('div', attrs={"class": 'credits'})
         reqs_co = soup.find_all('div', attrs={"class": 'sc-coReqs'})
@@ -177,14 +215,18 @@ for group in groupDict:
         reqs_co_list = parse_req(reqs_co)
         reqs_con_list = parse_req(reqs_con)
         reqs_rec_list = parse_req(reqs_rec)
+        '''
         print("Pre: ", reqs_pre_list)
         print("Co: ", reqs_co_list)
         print("Con: ", reqs_con_list)
         print("Recc: ", reqs_rec_list)
->>>>>>> 778d3364e0beb4d6327c5ae891ba7054d406e71e
+        '''
         credit_dict = parse_cred(credits)
-        print(credit_dict)
+        #print(credit_dict)
         info = parse_info(info_div)
         hours_dict = parse_hrs(hours_div, True)
-        print(hours_dict)
-
+        #print(hours_dict)
+        catalog[crn] = course_dict(crn, reqs_pre_list, reqs_co_list, reqs_con_list, reqs_rec_list, info, credit_dict,
+                                   hours_dict)
+        sleep(.2)
+pickle_data('catalog_pickle', catalog, True)
