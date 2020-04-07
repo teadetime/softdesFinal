@@ -115,14 +115,10 @@ def parse_info(info_div):
     return info
 
 
-def build_course_object():
-    pass
-
 
 # Set up Scraping links for Beautiful Soup
 base_link = "https://olin.smartcatalogiq.com/"
 root_link = base_link + "en/2019-20/Catalog/Courses-Credits-Hours"
-
 # Extract the contents of the link
 link_page = requests.get(root_link)
 soup = bs(link_page.content, 'html.parser')
@@ -141,6 +137,7 @@ for aGroup in groups:
 print(groupDict)
 
 #### Now scrape each of the links
+catalog = {}
 for group in groupDict:
     print(group)
     print(type(group))
@@ -185,5 +182,5 @@ for group in groupDict:
         info = parse_info(info_div)
         hours_dict = parse_hrs(hours_div, True)
         print(hours_dict)
-        # Now process the credits into each section
+        catalog[crn] = course_dict(crn, reqs_pre_list, reqs_co_list, reqs_con_list, reqs_rec_list, info, credit_dict, hours_dict )
         sleep(1)
