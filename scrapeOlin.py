@@ -1,12 +1,48 @@
 from bs4 import BeautifulSoup as bs
 from bs4 import SoupStrainer
+from time import sleep
 import requests
 import urllib.request
 import os
 import re
 from pickle import dump, load
 
-# Create a directory to store the Lrics in
+def parse_credit_dict(credit_dictionary):
+    """
+    :param credit_dictionary:
+    :return:
+    """
+    # TODO; THIS ISN'T USED, SEEMED REDUNDANT, HOWEVER, SUS CREDITS NEED TO BE SPLIT OUT NOW ELSEWHERE(a get total fucntion)
+    admn_crd = 0
+    ahse_crd = 0
+    engr_crd = 0
+    sci_crd = 0
+    mth_crd = 0
+    sus_crd = 0
+    for credit_typ, credits in credit_dict.items():
+        credit_typ.lower()
+        if credit_typ == 'admn':
+            admn_crd += credits
+        elif credit_typ == 'ahse':
+            ahse_crd += credits
+        elif credit_typ == 'engr':
+            engr_crd += credits
+        elif credit_typ == 'sci':
+            sci_crd += credits
+        elif credit_typ == 'mth':
+            mth_crd += credits
+        elif credit_typ == 'sus':
+            ahse_crd += credits / 2
+            sci_crd += credits / 2
+            sus_crd += credits
+    return None
+
+def course_dict(crn, pre_req, co_req, con_req, rec_req, desc, credit_dict, hours, term_requirement=None,
+                grade_limit=None, size=32, fall=True, spring=True):
+    course = {'crn': crn, 'desc': desc, 'pre_req': pre_req, 'hours': hours, 'term_requirement': term_requirement,
+              'grade_limit': grade_limit, 'size': size, 'fall': fall, 'spring': spring, 'co_req': co_req,
+              'con_req': con_req, 'rec_req': rec_req, 'credit_dict': credit_dict}
+    return course
 
 
 def parse_cred(credit_div):
@@ -19,7 +55,6 @@ def parse_cred(credit_div):
         return {}
 
     credit_text = credits[0].getText()
-
     # Check to see if it has parentheses (aka weird split(QEA))
     if '(' in credit_text:
         credit_text = credit_text.split('(', 1)[-1].split(')')[0]
@@ -29,7 +64,7 @@ def parse_cred(credit_div):
     credit_dict = {}
     # count by twos and iteare through the list
     for i in range(0, len(split_credits), 2):
-        credit_dict[split_credits[i + 1]] = split_credits[i]
+        credit_dict[split_credits[i + 1].lower()] = int(split_credits[i])
     return credit_dict
 
 
@@ -39,25 +74,24 @@ def parse_req(req_div):
     :param req_div:
     :return: a list that contains what requisites if any
     """
-    if len(req_div) == 0 or req_div[0].findChild() is None: # if there is no data or there was no tag found
+    if len(req_div) == 0 or req_div[0].findChild() is None:  # if there is no data or there was no tag found
         return []
 
-    req_text =req_div[0].contents[-1]
-    # TODO: Test
+    req_text = req_div[0].contents[-1]
     if any(map(str.isdigit, req_text)):
         req_text = req_text.replace('AND ', '')
         req_list = req_text.split()
         # TODO: check to see if commas are ever present
-    else: # this is a different type of requisite, don't string split
+    else:  # this is a different type of requisite, don't string split
         req_list = [req_text]
-
     return req_list
 
 
-def parse_hrs(hrs_div, dict = True):
+def parse_hrs(hrs_div, dict=True):
     if dict:
         hrs = {}
-    else: hrs = []
+    else:
+        hrs = []
     if len(hrs_div) == 0:
         return hrs
 
@@ -73,11 +107,13 @@ def parse_hrs(hrs_div, dict = True):
         hrs = hrs_split
     return hrs
 
+
 def parse_info(info_div):
     if len(info_div) == 0:
         return ''
     info = info_div[0].getText()
     return info
+
 
 def build_course_object():
     pass
@@ -104,7 +140,6 @@ for aGroup in groups:
         groupDict.append({'url': groupUrl})
 print(groupDict)
 
-
 #### Now scrape each of the links
 for group in groupDict:
     print(group)
@@ -118,11 +153,11 @@ for group in groupDict:
     soup = bs(link_page.content, 'html.parser')
 
     right_pnl = soup.find_all('div', attrs={"id": 'rightpanel'})  #
-    classes = right_pnl[0].find_all('a', attrs={"href": re.compile(url+'/')})  #
+    classes = right_pnl[0].find_all('a', attrs={"href": re.compile(url + '/')})  #
     for course in classes:
         # PARSE THE COURSE PAGE!!!!
-        # course_link = base_link + course.get('href')
-        course_link = "https://olin.smartcatalogiq.com/2019-20/Catalog/Courses-Credits-Hours/ENGR-Engineering/2000/ENGX2000"
+        course_link = base_link + course.get('href')
+        # course_link = "https://olin.smartcatalogiq.com/2019-20/Catalog/Courses-Credits-Hours/ENGR-Engineering/2000/ENGX2000" # Test an individual site!
         crn = course_link.split('/')[-1]
         print(crn)
         link_page = requests.get(course_link)
@@ -141,7 +176,7 @@ for group in groupDict:
         reqs_co_list = parse_req(reqs_co)
         reqs_con_list = parse_req(reqs_con)
         reqs_rec_list = parse_req(reqs_rec)
-        print("Pre: ",reqs_pre_list)
+        print("Pre: ", reqs_pre_list)
         print("Co: ", reqs_co_list)
         print("Con: ", reqs_con_list)
         print("Recc: ", reqs_rec_list)
@@ -151,6 +186,4 @@ for group in groupDict:
         hours_dict = parse_hrs(hours_div, True)
         print(hours_dict)
         # Now process the credits into each section
-    break
-    
-    
+        sleep(1)
