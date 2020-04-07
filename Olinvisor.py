@@ -1,7 +1,7 @@
 """
 Main File for Olinvisor, a virtual advisor deisnged for Olin College
 Started 4/2/2020
-Adi R, Jonas K, and Nathan F
+Adi R, and Nathan F
 """
 class Olin:
     """

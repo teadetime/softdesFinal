@@ -16,7 +16,6 @@ def parse_cred(credit_div):
     credit_dict = {}
     # Get number of items in list
     # Add the course type and then the number of credits
-    print(len(split_credits))
     for i in range(int(len(split_credits) / 2)):
         credit_dict[split_credits[i + 1]] = split_credits[i]
     return credit_dict
@@ -24,6 +23,7 @@ def parse_cred(credit_div):
 
 def parse_req(req_div):
     req_text = req_div[0].getText()
+    # TODO: Check to make sure it has numbers!!
     req_text.replace('AND ', '')
     req_list = req_text.split()
     return req_list
@@ -75,15 +75,22 @@ for group in groupDict:
     classes = right_pnl[0].find_all('a', attrs={"href": re.compile(url+'/')})  #
     for course in classes:
         # PARSE THE COURSE PAGE!!!!
-        print(course)
-        course_link = base_link + course.get('href')
+        # course_link = base_link + course.get('href')
+        course_link = "https://olin.smartcatalogiq.com/2019-20/Catalog/Courses-Credits-Hours/ENGR-Engineering/2000/ENGR2110"
         crn = course_link.split('/')[-1]
-
+        print(crn)
         link_page = requests.get(course_link)
         soup = bs(link_page.content, 'html.parser')
         credits = soup.find_all('div', attrs={"class": 'credits'})  #
-        
+        reqs_co = soup.find_all('div', attrs={"class": 'sc-coReqs'})
+        # reqs_con = soup.find_all('div', attrs={"class": 'credits'})
+        reqs_pre = soup.find_all('div', attrs={"class": 'sc-preReqs'})
+        '''reqs_rec = soup.find_all('div', attrs={"class": 'credits'})
+        hours = soup.find_all('div', attrs={"class": 'credits'})
+        info = soup.find_all('div', attrs={"class": 'credits'})'''
+        print(reqs_pre[0].getText().split())
         credit_dict = parse_cred(credits)
+        reqs_co_list = parse_req(reqs_pre)
         print(credit_dict)
         # Now process the credits into each section
     break
