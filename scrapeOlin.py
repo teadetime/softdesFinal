@@ -54,8 +54,24 @@ def parse_req(req_div):
     return req_list
 
 
-def parse_hrs(hrs_div):
-    pass
+def parse_hrs(hrs_div, dict = True):
+    if dict:
+        hrs = {}
+    else: hrs = []
+    if len(hrs_div) == 0:
+        return hrs
+
+    hours_text = hrs_div[0].contents[-1]
+    numeric = re.sub("\D", " ", hours_text)
+    hrs_split = numeric.split()
+    if dict:
+        # Make a dictionary with all the diff types
+        hrs['contact'] = int(hrs_split[0])
+        hrs['noncontact'] = int(hrs_split[1])
+        hrs['prep'] = int(hrs_split[2])
+    else:
+        hrs = hrs_split
+    return hrs
 
 def parse_info(info_div):
     if len(info_div) == 0:
@@ -116,8 +132,8 @@ for group in groupDict:
         reqs_co = soup.find_all('div', attrs={"class": 'sc-coReqs'})
         reqs_con = soup.find_all('div', attrs={"class": 'sc-concurrentReqs'})
         reqs_rec = soup.find_all('div', attrs={"class": 'sc-recommendedReqs'})
-        hours = soup.find_all('div', attrs={"class": 'sc-Attributes'})
-        info = soup.find_all('div', attrs={"class": 'desc'})
+        hours_div = soup.find_all('div', attrs={"class": 'sc-Attributes'})
+        info_div = soup.find_all('div', attrs={"class": 'desc'})
 
         # print(reqs_pre[0].contents[-1]) # Use contents to get the last child!
 
@@ -131,7 +147,9 @@ for group in groupDict:
         print("Recc: ", reqs_rec_list)
         credit_dict = parse_cred(credits)
         print(credit_dict)
-        info_div = parse_info(info)
+        info = parse_info(info_div)
+        hours_dict = parse_hrs(hours_div, True)
+        print(hours_dict)
         # Now process the credits into each section
     break
     
