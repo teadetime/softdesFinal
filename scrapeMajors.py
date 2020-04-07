@@ -1,3 +1,10 @@
+"""
+File to scrape Majors and store them as Major Objects
+Started 4/2/2020
+Adi R, Nathan F
+
+"""
+
 from bs4 import BeautifulSoup as bs
 from bs4 import SoupStrainer
 import requests
@@ -5,21 +12,6 @@ import urllib.request
 import os
 import re
 from pickle import dump, load
-
-
-
-class Major:
-    """
-    This class is used to store information about majors
-    """
-    def __init__(self, name, reqs_list ):
-        self.name = ''
-        self.abs_reqs = reqs_list[0]
-        reqs_list.pop(0)
-        self.one_reqs = []
-        for group in reqs_list:
-            self.one_reqs.append(group) # list of lists for one required Courses
-
 
 # Var definitions for bs4
 

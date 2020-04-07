@@ -1,11 +1,8 @@
 """
 Main File for Olinvisor, a virtual advisor deisnged for Olin College
 Started 4/2/2020
-<<<<<<< HEAD
 Adi R, Nathan F
-=======
-Adi R, and Nathan F
->>>>>>> 778d3364e0beb4d6327c5ae891ba7054d406e71e
+
 """
 class Olin:
     """
@@ -23,6 +20,7 @@ class Course:
     this object defines a course, credits, offering times
     use bs4 to scrape: https://olin.smartcatalogiq.com/2019-20/Catalog/Courses-Credits-Hours/ENGR-Engineering
     """
+
     def __init__(self):
     # Maybe there should be a list of credit types, that are passes
         self.crn =
@@ -37,10 +35,58 @@ class Course:
         self.term_requirement = 1 # Term that this course is required to be taken (like qea)
         self.grade_limit = 1 #First Year only class (1st semester ahs)
 
+
+class Major:
+    """
+    This class is used to store information about majors
+    """
+    def __init__(self, name, reqs_list ):
+        self.name = ''
+        self.abs_reqs = reqs_list[0]
+        reqs_list.pop(0)
+        self.one_reqs = []
+        for group in reqs_list:
+            self.one_reqs.append(group) # list of lists for one required Courses
+
+
 class Schedule:
     """
     This class represents your entrire stay at olin aka 10 semesters max?
     can be stored locally to save progress or specific plans that are generated"""
-    def __init__(self, major, ):
-        sem_1_fall = COME COURSE
-        etc...
+    # TODO: fill sem1_classes default constructor below
+    def __init__(self, major, weight_preferences, sem2_classes,sem1_classes=[], BOW_classes=None, LOA_sems=None): # include *args or **kwargs to account for external factors, BOW classes, etc.
+        # Initialize Empty Schedule
+        self.major = Major
+        self.name = Major.name
+        self.sem1 = sem1_classes
+        self.sem2 = sem2_classes
+        self.sem9 = []
+        self.sem3 = []
+        self.sem4 = []
+        self.sem5 = []
+        self.sem5 = []
+        self.sem7 = []
+        self.sem8 = []
+        self.sem10 = []
+        self.course_progression = [self.sem1, self.sem2, self.sem3, self.sem4, self.sem5, self.sem6, self.sem7, self.sem8, self.sem9, self.sem10]
+        self.weight_preferences = weight_preferences
+
+    def insertCourse(self,course):
+        findOpening(course,
+
+    def findOpening(self, course):
+        for i in range(len(self.course_progression)):
+            if self.course_progression[i]
+
+    def checkPrereqs(self, course, position):
+
+
+
+    def forge_schedule(self):
+        for course in self.major.abs_reqs:
+            self.insertCourse(course)
+        for course in self.major.one_reqs:
+            self.insertCourse
+
+
+        return self.course_progression
