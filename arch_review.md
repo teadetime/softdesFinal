@@ -12,6 +12,7 @@ Our current implentations stores courses and their data as a dictionary of dicti
 We also need to store data for an individual user (what classes they have taken etc). We feel this belongs in a class so that supporting methods regarding filling in the schedule can be applied. The course requirements are also stored in a class so that supporting methods can be written. We are very interested in feedback on these decisions.
 
 ## Agenda for technical review session 
+https://docs.google.com/presentation/d/13o11vtV_CnRqjwEzais8MNkHSxNGDNZTTsFdXRmnxQk/edit?usp=sharing
 * Intro to our project and what we are trying to do (2mins)
 * Intro into our current implentation strategy and MVP  (2mins)
 * Questions about our implemntation strategy (2min)
