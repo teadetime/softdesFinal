@@ -1,5 +1,10 @@
 # Olinvisor, a scheduling program for Olin students
 ## Background and context 
+The goal of this project is to make a semi-automated course scheduler for students. They will be able to input their current courses and other restraints (LOA, study away, etc) and their degree and recieve potential schedules they could take.
+We plan to do this off of various information that we have access to:
+* Olin course online catalgue (has CRN and credits etc, as well as degree requirements)
+* This year's fall and spring offerings(to establish which semeseters courses are offered)
+
 What information about your project does the audience need to participate fully in the technical review? You should share enough to make sure your audience understands the questions you are asking, but without going into unnecessary detail.
 
 ## Key questions
