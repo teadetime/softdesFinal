@@ -88,7 +88,7 @@ def parse_cred(credit_div):
     if len(credit_div) == 0:
         return {}
 
-    credit_text = credits[0].getText().lower()
+    credit_text = credit_div[0].getText().lower()
     if not bool(re.search(r'\d', credit_text)):
         # then this is likely a special topics class with variable credits
         credit_text.replace('variable credits', '')
@@ -154,78 +154,71 @@ def parse_info(info_div):
     info = info_div[0].getText()
     return info
 
-if __name__ == '__main__':
-
+def get_group_links(page_base_link, other_link):
     # Set up Scraping links for Beautiful Soup
-    base_link = "https://olin.smartcatalogiq.com/"
-    root_link = base_link + "en/2019-20/Catalog/Courses-Credits-Hours"
+    root_link = page_base_link + other_link
     # Extract the contents of the link
     link_page = requests.get(root_link)
     soup = bs(link_page.content, 'html.parser')
     right_pnl = soup.find_all('div', attrs={"id": 'rightpanel'})
     groups = right_pnl[0].find_all('a', attrs={"href": re.compile('Catalog/Courses-Credits-Hours/')})  #
-    print(groups)
     # Now lets put those urls into a dictionary
-    groupDict = []
+    groupLst = []
     for aGroup in groups:
         groupUrl = aGroup.get('href')
         group_name = aGroup.getText()
-        # print(group_name)
-        # print(groupUrl)
         # There are duplicate links so don't duplicate entries
-        if group_name not in groupDict:
-            groupDict.append({'url': groupUrl})
-    print(groupDict)
+        if group_name not in groupLst:
+            groupLst.append({'url': groupUrl})
+    return groupLst
 
-    #### Now scrape each of the links
+
+def parse_bulid_course(a_course_link, crn):
+    print(crn)
+    course_page = requests.get(a_course_link)
+    course_soup = bs(course_page.content, 'html.parser')
+    reqs_pre = course_soup.find_all('div', attrs={"class": 'sc-preReqs'})
+    page_credits = course_soup.find_all('div', attrs={"class": 'credits'})
+    reqs_co = course_soup.find_all('div', attrs={"class": 'sc-coReqs'})
+    reqs_con = course_soup.find_all('div', attrs={"class": 'sc-concurrentReqs'})
+    reqs_rec = course_soup.find_all('div', attrs={"class": 'sc-recommendedReqs'})
+    hours_div = course_soup.find_all('div', attrs={"class": 'sc-Attributes'})
+    info_div = course_soup.find_all('div', attrs={"class": 'desc'})
+    reqs_pre_list = parse_req(reqs_pre)
+    reqs_co_list = parse_req(reqs_co)
+    reqs_con_list = parse_req(reqs_con)
+    reqs_rec_list = parse_req(reqs_rec)
+    credit_dict = parse_cred(page_credits)
+    # print(credit_dict)
+    info = parse_info(info_div)
+    hours_dict = parse_hrs(hours_div, True)
+    # print(hours_dict)
+    return course_dict(crn, reqs_pre_list, reqs_co_list, reqs_con_list, reqs_rec_list, info, credit_dict, hours_dict)
+
+
+if __name__ == '__main__':
+    base_link = "https://olin.smartcatalogiq.com/"
+    groupDict = get_group_links(base_link, "en/2019-20/Catalog/Courses-Credits-Hours")
+
+    # Now scrape each of the links
     catalog = {}
+
     for group in groupDict:
-        print(group)
-        print(type(group))
         url = group['url']
         group_link = base_link + url
         print(group_link)
-
         # Get links for each page and store them in a list
         link_page = requests.get(group_link)
         soup = bs(link_page.content, 'html.parser')
+        right_pnl = soup.find_all('div', attrs={"id": 'rightpanel'})
+        classes = right_pnl[0].find_all('a', attrs={"href": re.compile(url + '/')})
 
-        right_pnl = soup.find_all('div', attrs={"id": 'rightpanel'})  #
-        classes = right_pnl[0].find_all('a', attrs={"href": re.compile(url + '/')})  #
         for course in classes:
             # PARSE THE COURSE PAGE!!!!
             course_link = base_link + course.get('href')
             #course_link = "https://olin.smartcatalogiq.com/en/2019-20/Catalog/Courses-Credits-Hours/OIE-Olin-Intro-Experience/1000/OIE1000" # Test an individual site!
             crn = course_link.split('/')[-1]
-            print(crn)
-            link_page = requests.get(course_link)
-            soup = bs(link_page.content, 'html.parser')
-            reqs_pre = soup.find_all('div', attrs={"class": 'sc-preReqs'})
-            credits = soup.find_all('div', attrs={"class": 'credits'})
-            reqs_co = soup.find_all('div', attrs={"class": 'sc-coReqs'})
-            reqs_con = soup.find_all('div', attrs={"class": 'sc-concurrentReqs'})
-            reqs_rec = soup.find_all('div', attrs={"class": 'sc-recommendedReqs'})
-            hours_div = soup.find_all('div', attrs={"class": 'sc-Attributes'})
-            info_div = soup.find_all('div', attrs={"class": 'desc'})
-
-            # print(reqs_pre[0].contents[-1]) # Use contents to get the last child!
-
-            reqs_pre_list = parse_req(reqs_pre)
-            reqs_co_list = parse_req(reqs_co)
-            reqs_con_list = parse_req(reqs_con)
-            reqs_rec_list = parse_req(reqs_rec)
-            '''
-            print("Pre: ", reqs_pre_list)
-            print("Co: ", reqs_co_list)
-            print("Con: ", reqs_con_list)
-            print("Recc: ", reqs_rec_list)
-            '''
-            credit_dict = parse_cred(credits)
-            #print(credit_dict)
-            info = parse_info(info_div)
-            hours_dict = parse_hrs(hours_div, True)
-            #print(hours_dict)
-            catalog[crn] = course_dict(crn, reqs_pre_list, reqs_co_list, reqs_con_list, reqs_rec_list, info, credit_dict,
-                                       hours_dict)
+            catalog[crn] = parse_bulid_course(course_link, crn)
             sleep(.2)
+
     pickle_data('catalog_pickle', catalog, True)
