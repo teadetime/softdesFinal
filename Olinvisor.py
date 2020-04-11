@@ -10,8 +10,8 @@ class Olin:
     Contains Majors, and total degree requirements etc.
     """
     def __init__(self, degrees):
-    self.semester = True
-    self.degrees = degrees
+        self.semester = True
+        self.degrees = degrees
     pass
 
 
@@ -34,20 +34,6 @@ class Course:
         self.seats =
         self.term_requirement = 1 # Term that this course is required to be taken (like qea)
         self.grade_limit = 1 #First Year only class (1st semester ahs)
-
-
-class Major:
-    """
-    This class is used to store information about majors
-    """
-    def __init__(self, name, reqs_list ):
-        self.name = ''
-        self.abs_reqs = reqs_list[0]
-        reqs_list.pop(0)
-        self.one_reqs = []
-        for group in reqs_list:
-            self.one_reqs.append(group) # list of lists for one required Courses
-
 
 """
 Techincal questions:

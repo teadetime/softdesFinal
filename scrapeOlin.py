@@ -9,6 +9,20 @@ from pickle import dump, load
 import sys
 
 
+class Major:
+    """
+    This class is used to store information about majors
+    """
+
+    def __init__(self, name, reqs_list):
+        self.name = name
+        self.abs_reqs = reqs_list[0]
+        # reqs_list.pop(0)
+        self.one_reqs = []
+        for group in reqs_list:
+            self.one_reqs.append(group)  # list of lists for one required Courses
+
+
 def pickle_data(file_path, data, overwrite):
     """
     Pickle a specific piece of data in binary. Can be pickled at any directory, will not overwrite current data unless
@@ -52,7 +66,7 @@ def parse_credit_dict(credit_dictionary):
     sci_crd = 0
     mth_crd = 0
     sus_crd = 0
-    for credit_typ, credits in credit_dict.items():
+    for credit_typ, credits in credit_dictionary.items():
         credit_typ.lower()
         if credit_typ == 'admn':
             admn_crd += credits
@@ -99,7 +113,7 @@ def parse_cred(credit_div):
         credit_text.replace(',', '')
 
     split_credits = credit_text.split()
-    if len(split_credits)%2 != 0:
+    if len(split_credits) % 2 != 0:
         return {'elec': int(split_credits[0])}
     credit_dict = {}
     # count by twos and iteare through the list
@@ -154,6 +168,7 @@ def parse_info(info_div):
     info = info_div[0].getText()
     return info
 
+
 def get_group_links(page_base_link, other_link):
     # Set up Scraping links for Beautiful Soup
     root_link = page_base_link + other_link
@@ -196,13 +211,34 @@ def parse_bulid_course(a_course_link, crn):
     return course_dict(crn, reqs_pre_list, reqs_co_list, reqs_con_list, reqs_rec_list, info, credit_dict, hours_dict)
 
 
+def collect_majors(root_lnk, major_link, major_nm):
+    link_page = requests.get(root_lnk + major_link)
+    soup = bs(link_page.content, 'html.parser')
+    groups_rec_names = soup.find_all('h3', attrs={
+        "class": 'sc-RequiredCoursesHeading1'})  # grab all instances of required course headings
+    major_link = major_link.replace('/', '')
+    major_link = major_link.split('-')[-1]
+    groups_rec_tables = soup.find_all('table')
+    temp_list_major = []
+    for table in groups_rec_tables:
+        table_links = table.find_all('a', attrs={"class": 'sc-courselink'})  #
+        table_temp = []
+        for link in table_links:
+            # print(link.contents)
+            if len(link.contents) > 0:
+                table_temp.append(link.contents[0])
+        temp_list_major.append(table_temp)
+    # print(temp_list_major)
+    return Major(major_nm, temp_list_major)
+
+
 if __name__ == '__main__':
     base_link = "https://olin.smartcatalogiq.com/"
     groupDict = get_group_links(base_link, "en/2019-20/Catalog/Courses-Credits-Hours")
 
     # Now scrape each of the links
-    catalog = {}
 
+    catalog = {}
     for group in groupDict:
         url = group['url']
         group_link = base_link + url
@@ -216,9 +252,19 @@ if __name__ == '__main__':
         for course in classes:
             # PARSE THE COURSE PAGE!!!!
             course_link = base_link + course.get('href')
-            #course_link = "https://olin.smartcatalogiq.com/en/2019-20/Catalog/Courses-Credits-Hours/OIE-Olin-Intro-Experience/1000/OIE1000" # Test an individual site!
+            # course_link = "https://olin.smartcatalogiq.com/en/2019-20/Catalog/Courses-Credits-Hours/OIE-Olin-Intro-Experience/1000/OIE1000" # Test an individual site!
             crn = course_link.split('/')[-1]
             catalog[crn] = parse_bulid_course(course_link, crn)
             sleep(.2)
-
     pickle_data('catalog_pickle', catalog, True)
+
+    # Now get the data for majors
+    majors = {}
+    major_root_link = base_link + "en/2019-20/Catalog/Programs-of-Study-and-Degree-Requirements/Academic-Programs/"
+    major_groups = ['Electrical-and-Computer-Engineering-ECE/', 'Mechanical-Engineering-ME/']
+
+    for major in major_groups:
+        major_name = major.replace('/', '').split('-')[-1]
+        majors[major_name] = collect_majors(major_root_link, major, major_name)
+        # TODO: Add a timestamp into the majors dict
+    pickle_data('majors_pickle', majors, True)
