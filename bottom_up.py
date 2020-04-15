@@ -1,23 +1,24 @@
 from scrapeOlin import Major, pickle_data, load_pickle_data
 
+
 class Schedule:
     """
        This class represents your entrire stay at olin aka 10 semesters max?
        can be stored locally to save progress or specific plans that are generated"""
 
-    def __init__(self, pot_majors, course_catalog, schedule = [], major_nm='ME'):
+    def __init__(self, pot_majors, course_catalog, schedule=[], major_nm='ME'):
         # things to note: courses taken is list of lists,
         self.major_reqs = pot_majors
         self.major = major_nm
         self.catalog = course_catalog
-        #self.name = Major.name
+        # self.name = Major.name
         self.schedule = schedule
 
-    def sum_credits(self,semester = None , type = None):
+    def sum_credits(self, semester=None, type=None):
         '''Iterate through students courses and return number of credits'''
         credits_num = 0
         if semester is not None:
-            semester = self.schedule[semester-1] # Assuming numeric input
+            semester = self.schedule[semester - 1]  # Assuming numeric input
             for crn in semester:
                 course = self.catalog[crn]
                 if type is None:
@@ -39,14 +40,13 @@ class Schedule:
         # Get the list of required classes
         self.major_reqs
 
-
-    def get_recs(self, crn, course_lst):
+    def get_recs(self, crn, course_lst=[]):
         '''Recuresively build a list of all the courses that are needed for a given course'''
         courses = course_lst
         courses.append(crn)
-        reqs= self.catalog[crn]['pre_req']
+        reqs = self.catalog[crn]['pre_req']
         for i in reqs:
-            self.get_recs(i,courses)
+            self.get_recs(i, courses)
         return courses
 
     def taken_course(self, crn):
@@ -74,12 +74,13 @@ class Schedule:
         return validity
 
 
-
 if __name__ == '__main__':
     # Load the majors and course data
     catalog = load_pickle_data('catalog_pickle')
     majors = load_pickle_data('majors_pickle')
     # TODO: make script that can be run to input your current schedule
+    nathan_courses = [['ENGR1125', 'ENGR1200', 'MTH1111', 'SCI1111', 'AHSE1135', 'OIE1000'],
+                      ['ENGX2000', 'ENGX2001', 'ENGR2510', 'AHSE1515', 'SUST2201']]
     # Make a student Schedule
-    student_schedule = Schedule(majors,catalog, [])
-    print(student_schedule.get_recs('ENGR3330', []))
+    student_schedule = Schedule(majors, catalog, nathan_courses)
+    print(student_schedule.sum_credits())
