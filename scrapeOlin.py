@@ -85,9 +85,9 @@ def parse_credit_dict(credit_dictionary):
     return None
 
 
-def course_dict(crn, pre_req, co_req, con_req, rec_req, desc, credit_dict, hours, term_requirement=None,
+def course_dict(crn, course_nm, pre_req, co_req, con_req, rec_req, desc, credit_dict, hours, term_requirement=None,
                 grade_limit=None, size=32, fall=True, spring=True):
-    course = {'crn': crn, 'desc': desc, 'pre_req': pre_req, 'hours': hours, 'term_requirement': term_requirement,
+    course = {'crn': crn, 'course_nm': course_nm, 'desc': desc, 'pre_req': pre_req, 'hours': hours, 'term_requirement': term_requirement,
               'grade_limit': grade_limit, 'size': size, 'fall': fall, 'spring': spring, 'co_req': co_req,
               'con_req': con_req, 'rec_req': rec_req, 'credit_dict': credit_dict}
     return course
@@ -95,7 +95,6 @@ def course_dict(crn, pre_req, co_req, con_req, rec_req, desc, credit_dict, hours
 
 def parse_cred(credit_div):
     """
-
     :param credit_div:
     :return:
     """
@@ -103,7 +102,7 @@ def parse_cred(credit_div):
         return {}
 
     credit_text = credit_div[0].getText().lower()
-    if not bool(re.search(r'\d', credit_text)):
+    if not bool(re.search(r'\d', credit_text)): # Checks for no numbers
         # then this is likely a special topics class with variable credits
         credit_text.replace('variable credits', '')
         return {credit_text: 4, 'flagged': True}
@@ -132,6 +131,8 @@ def parse_req(req_div):
         return []
 
     req_text = req_div[0].contents[-1]
+
+    # Check to see if there are any digits (indicates a classs rec rather than weird audition etc)
     if any(map(str.isdigit, req_text)):
         req_text = req_text.replace('AND ', '')
         req_list = req_text.split()
@@ -190,25 +191,30 @@ def get_group_links(page_base_link, other_link):
 
 def parse_bulid_course(a_course_link, crn):
     print(crn)
+    # TODO: THE NEAME OF THE COURSE ALSO NEEDS TO BE PARSED!!!!!
     course_page = requests.get(a_course_link)
     course_soup = bs(course_page.content, 'html.parser')
-    reqs_pre = course_soup.find_all('div', attrs={"class": 'sc-preReqs'})
-    page_credits = course_soup.find_all('div', attrs={"class": 'credits'})
-    reqs_co = course_soup.find_all('div', attrs={"class": 'sc-coReqs'})
-    reqs_con = course_soup.find_all('div', attrs={"class": 'sc-concurrentReqs'})
-    reqs_rec = course_soup.find_all('div', attrs={"class": 'sc-recommendedReqs'})
-    hours_div = course_soup.find_all('div', attrs={"class": 'sc-Attributes'})
-    info_div = course_soup.find_all('div', attrs={"class": 'desc'})
+    right_pnl = course_soup.find_all('div', attrs={"id": 'rightpanel'})
+    # finds a h1 tag, gets the contents, splits it once and takes the second piece and then gets rid of whitespace
+    course_name = right_pnl[0].find_all('h1')[0].contents[-1].split(' ', 1)[1].rstrip()
+    print(course_name)
+    reqs_pre = right_pnl[0].find_all('div', attrs={"class": 'sc-preReqs'})
+    page_credits = right_pnl[0].find_all('div', attrs={"class": 'credits'})
+    reqs_co = right_pnl[0].find_all('div', attrs={"class": 'sc-coReqs'})
+    reqs_con = right_pnl[0].find_all('div', attrs={"class": 'sc-concurrentReqs'})
+    reqs_rec = right_pnl[0].find_all('div', attrs={"class": 'sc-recommendedReqs'})
+    hours_div = right_pnl[0].find_all('div', attrs={"class": 'sc-Attributes'})
+    info_div = right_pnl[0].find_all('div', attrs={"class": 'desc'})
     reqs_pre_list = parse_req(reqs_pre)
     reqs_co_list = parse_req(reqs_co)
     reqs_con_list = parse_req(reqs_con)
     reqs_rec_list = parse_req(reqs_rec)
     credit_dict = parse_cred(page_credits)
-    # print(credit_dict)
+    #print(credit_dict)
     info = parse_info(info_div)
     hours_dict = parse_hrs(hours_div, True)
-    # print(hours_dict)
-    return course_dict(crn, reqs_pre_list, reqs_co_list, reqs_con_list, reqs_rec_list, info, credit_dict, hours_dict)
+    #print(hours_dict)
+    return course_dict(crn,course_name , reqs_pre_list, reqs_co_list, reqs_con_list, reqs_rec_list, info, credit_dict, hours_dict)
 
 
 def collect_majors(root_lnk, major_link, major_nm):
