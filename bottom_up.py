@@ -83,6 +83,3 @@ if __name__ == '__main__':
     # Make a student Schedule
     student_schedule = Schedule(majors,catalog, [])
     print(student_schedule.get_recs('ENGR3330', []))
-
-
-

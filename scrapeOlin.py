@@ -197,7 +197,7 @@ def parse_bulid_course(a_course_link, crn):
     right_pnl = course_soup.find_all('div', attrs={"id": 'rightpanel'})
     # finds a h1 tag, gets the contents, splits it once and takes the second piece and then gets rid of whitespace
     course_name = right_pnl[0].find_all('h1')[0].contents[-1].split(' ', 1)[1].rstrip()
-    print(course_name)
+    # print(course_name)
     reqs_pre = right_pnl[0].find_all('div', attrs={"class": 'sc-preReqs'})
     page_credits = right_pnl[0].find_all('div', attrs={"class": 'credits'})
     reqs_co = right_pnl[0].find_all('div', attrs={"class": 'sc-coReqs'})
