@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup as bs
-from bs4 import SoupStrainer
 from time import sleep
 import requests
 import urllib.request
@@ -16,12 +15,11 @@ class Major:
 
     def __init__(self, name, reqs_list):
         self.name = name
-        self.abs_reqs = reqs_list[0]
+        self.abs_reqs = [reqs_list[0]]
         # reqs_list.pop(0)
         self.one_reqs = []
         for group in reqs_list:
             self.one_reqs.append(group)  # list of lists for one required Courses
-
 
 def pickle_data(file_path, data, overwrite):
     """
@@ -109,7 +107,7 @@ def parse_cred(credit_div):
     # Check to see if it has parentheses (aka weird split(QEA))
     if '(' in credit_text:
         credit_text = credit_text.split('(', 1)[-1].split(')')[0]
-        credit_text.replace(',', '')
+        credit_text = credit_text.replace(',', '')
 
     split_credits = credit_text.split()
     if len(split_credits) % 2 != 0:
@@ -128,14 +126,21 @@ def parse_req(req_div):
     :return: a list that contains what requisites if any
     """
     if len(req_div) == 0 or req_div[0].findChild() is None:  # if there is no data or there was no tag found
-        return []
+        return [[]]
 
     req_text = req_div[0].contents[-1]
 
     # Check to see if there are any digits (indicates a classs rec rather than weird audition etc)
     if any(map(str.isdigit, req_text)):
         req_text = req_text.replace('AND ', '')
-        req_list = req_text.split()
+        req_text = req_text.replace(';', '')
+        req_list = []
+        # TODO: Handle classes with OR distinctions (ie ENGR3310)
+        or_splits = req_text.split('OR ')
+        for option in or_splits:
+            req_list.append(option.split())
+        # else:
+        #     req_list = req_text.split()
         # TODO: check to see if commas are ever present
     else:  # this is a different type of requisite, don't string split
         req_list = [req_text]
@@ -206,6 +211,7 @@ def parse_bulid_course(a_course_link, crn):
     hours_div = right_pnl[0].find_all('div', attrs={"class": 'sc-Attributes'})
     info_div = right_pnl[0].find_all('div', attrs={"class": 'desc'})
     reqs_pre_list = parse_req(reqs_pre)
+    #print(reqs_pre_list)
     reqs_co_list = parse_req(reqs_co)
     reqs_con_list = parse_req(reqs_con)
     reqs_rec_list = parse_req(reqs_rec)
@@ -243,8 +249,10 @@ if __name__ == '__main__':
     groupDict = get_group_links(base_link, "en/2019-20/Catalog/Courses-Credits-Hours")
 
     # Now scrape each of the links
-
     catalog = {}
+    # Manually add in LOA and Study Away
+    catalog['LOA'] = course_dict('LOA', 'Leave of Absence' , [[]], [[]], [[]], [[]], '', {}, {})
+    catalog['STUDY_AWAY'] = course_dict('STUDY_AWAY', 'Study away course', [[]], [[]], [[]], [[]], 'Course to mark a study away', {}, {})
     for group in groupDict:
         url = group['url']
         group_link = base_link + url
@@ -258,11 +266,11 @@ if __name__ == '__main__':
         for course in classes:
             # PARSE THE COURSE PAGE!!!!
             course_link = base_link + course.get('href')
-            # course_link = "https://olin.smartcatalogiq.com/en/2019-20/Catalog/Courses-Credits-Hours/OIE-Olin-Intro-Experience/1000/OIE1000" # Test an individual site!
+            #course_link = "https://olin.smartcatalogiq.com/2018-19/Catalog/Courses-Credits-Hours/ENGR-Engineering/3000/ENGR3110" # Test an individual site!
             crn = course_link.split('/')[-1]
             catalog[crn] = parse_bulid_course(course_link, crn)
-            sleep(.2)
-    pickle_data('catalog_pickle', catalog, True)
+
+    pickle_data('data/catalog4_pickle', catalog, True)
 
     # Now get the data for majors
     majors = {}
@@ -273,4 +281,4 @@ if __name__ == '__main__':
         major_name = major.replace('/', '').split('-')[-1]
         majors[major_name] = collect_majors(major_root_link, major, major_name)
         # TODO: Add a timestamp into the majors dict
-    pickle_data('majors_pickle', majors, True)
+    pickle_data('data/majors3_pickle', majors, True)
