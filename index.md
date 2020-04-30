@@ -1,4 +1,6 @@
-layout: default
+---
+title: Testign title
+---
 
 #  THIS IS THE MAIN PROJECT SITE
 
