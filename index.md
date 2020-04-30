@@ -7,12 +7,12 @@ description: some description
 Worrying about graduating isn't fun! We are both students at Olin College of Engineering and thought that we could alleviate some of this stress. By looking at all course offerings and major requirements we believe that we can help automate that process of building a course schedule for your college career.
 Here's a quick screenshot of where this is right now:
 
-## User instructions/README
+## Usage/Installation ->README
 This software was developed on both Windows and Linux environments. However, we recommend using linux to run this as it handles our text output and interface much better.
+Please check out the readme to understand how to use this tool
 [View Readme](/README.md)
-Information to help users download, install, and get started running your software (README rubric)
 
-## Results 
+## Results/What this does
 Please take alook at the doc [View Saving Documentation](/saved_schedules/saving_readme.md)
 This tool can be used to achieve several different results. One option is to simply input your schedule as it sits and validate for any errors like a lack of Pre-Reqs etc. Another option is to generate a slew of schedules that let you plan out for less-ideal situations and make sure that you can have a plan if things don't go your way. This tool makes it possible to see flexibility with multiple schedules rather than storing all of these options mentally.
 Here you can see what completed schedule looks like(saved as .txt file):
@@ -24,10 +24,6 @@ You can also see warning messages when trying to register for courses that you d
 INSERT IMAGE
 
 Though the details will be different for each project, show off what your software can do! Screenshots and video are likely helpful. Include graphs or other data if appropriate.
-
-## Software Impact Statement 
-
-Reflect on the ethical considerations you made throughout the design process, starting with project ideation and the priorities you set for your team. You should think of all of the stakeholders that might be impacted by your project and unintended consequences of the deployment of your software in real world scenarios. Discuss strategies for mitigating these issues.
 
 ## Project Evolution
 Our original goals for this project were centered around making the scheduling process entirely automatic. This would allow students to basically see many different permutations of their schedule and see if ceratin choices significantly limited their options or potential to graduate.
