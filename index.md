@@ -1,7 +1,6 @@
 ---
-title: Testign title
-layout:default
-content: antohre tesr
+title: [Olin Course Scheduling Assistant]
+description: [A short description of your site's purpose]
 ---
 #  THIS IS THE MAIN PROJECT SITE
 
