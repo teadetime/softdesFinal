@@ -12,7 +12,7 @@ Information to help users download, install, and get started running your softwa
 
 ## Implementation information 
 Code doesn’t tell a story by itself. Use more effective methods such as flowcharts and architectural, class, or sequence diagrams to explain how your code works. You could consider including or linking to snippets of code to highlight a particularly crucial segment.
-```python
+```py
 // pythoncode with syntax highlighting.
 def clean_course_list(self, course_lst, semester=None):
     # Not sure if code is needed
