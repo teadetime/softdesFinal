@@ -1,3 +1,5 @@
+layout: default
+
 #  THIS IS THE MAIN PROJECT SITE
 
 
