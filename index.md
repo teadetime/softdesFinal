@@ -1,6 +1,7 @@
 ---
 title: Olin Course Scheduling Assistant
 description: some description
+layout: default
 ---
 
 ## Big Idea/Goal/What is this?/ Why did we do this? 
