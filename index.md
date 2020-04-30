@@ -8,14 +8,13 @@ Worrying about graduating isn't fun! We are both students at Olin College of Eng
 Here's a quick screenshot of where this is right now:
 
 ## User instructions/README
-This software was developed on both Windows and Linux environments. However we recommend using linux to run this as it handles our text output and interface much better.
+This software was developed on both Windows and Linux environments. However, we recommend using linux to run this as it handles our text output and interface much better.
 [View Readme](/README.md)
 Information to help users download, install, and get started running your software (README rubric)
 
 ## Usage and Implementation information 
 Code doesn’t tell a story by itself. Use more effective methods such as flowcharts and architectural, class, or sequence diagrams to explain how your code works. You could consider including or linking to snippets of code to highlight a particularly crucial segment.
 ```py
-// pythoncode with syntax highlighting.
 def clean_course_list(self, course_lst, semester=None):
     # Not sure if code is needed
     """
@@ -24,6 +23,17 @@ def clean_course_list(self, course_lst, semester=None):
     """
     return [course for course in course_lst if self.valid_course(course, semester)]
 ```
+
+# Saving Schedules
+This is the default folder that schedules get saved into when the program is run
+
+### How to delete
+
+### How to load
+
+### Difference between .pkl and .txt
+
+### What are these wierd filenames?!
 
 ## Results 
 Please take alook at the doc [View Saving Documentation](/saved_schedules/saving_readme.md)
@@ -39,13 +49,14 @@ INSERT IMAGE
 Though the details will be different for each project, show off what your software can do! Screenshots and video are likely helpful. Include graphs or other data if appropriate.
 
 ## Software Impact Statement 
+
 Reflect on the ethical considerations you made throughout the design process, starting with project ideation and the priorities you set for your team. You should think of all of the stakeholders that might be impacted by your project and unintended consequences of the deployment of your software in real world scenarios. Discuss strategies for mitigating these issues.
 
 ## Project evolution/narrative 
 Tell an illustrative story about the process of creating your software, showing how it improved over time. This may draw upon what you learned from the two peer technical reviews and from the code review. Consider the use of screenshots or other tools to demonstrate how your project evolved.
 
 ## What we learned
-Scheduling is hard!! One of the larest roadblocks we ran into was the fact that courses aren't consistentyl offered year to year at Olin. This information is necessary to make this process more automated. There is also nto data for us to take into account for classes that may be offered at the same time during the day. We actually had to register for classes while working on this project, it seems that in many cases student's aren't particularly worried with how the rest of course fit in but more how they can get the courses they want. 
+**Scheduling is hard!!** One of the larest roadblocks we ran into was the fact that courses aren't consistentyl offered year to year at Olin. This information is necessary to make this process more automated. There is also nto data for us to take into account for classes that may be offered at the same time during the day. We actually had to register for classes while working on this project, it seems that in many cases student's aren't particularly worried with how the rest of course fit in but more how they can get the courses they want. 
 
 ## The Future
 We tried to design our program and data structures in a way that could be expanded and moved to potentially other colleges. Whether this is practical is an entirely different matter. Olin has a very unique set of requirements but with little adaptation this could be applied to other school's courses and majors. Development is going to pause on this project as we have other responsibilities at the moment. 
