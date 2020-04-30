@@ -1,10 +1,7 @@
 ---
-title: [Olin Course Scheduling Assistant]
-description: [A short description of your site's purpose]
+title: Olin Course Scheduling Assistant
+description: some description
 ---
-#  THIS IS THE MAIN PROJECT SITE
-
-
 
 ## Big Idea/Goal/What is this?/ Why did we do this? 
 Quick and easily understandable explanation of what your project is all about. Consider including a narrative or example use case, e.g. via screenshots, video, or story boarding.
