@@ -12,6 +12,16 @@ Information to help users download, install, and get started running your softwa
 
 ## Implementation information 
 Code doesn’t tell a story by itself. Use more effective methods such as flowcharts and architectural, class, or sequence diagrams to explain how your code works. You could consider including or linking to snippets of code to highlight a particularly crucial segment.
+```python
+// pythoncode with syntax highlighting.
+def clean_course_list(self, course_lst, semester=None):
+    # Not sure if code is needed
+    """
+    Runs valid course on a list of courses and returns the valid ones
+    :return:
+    """
+    return [course for course in course_lst if self.valid_course(course, semester)]
+```
 
 ## Results 
 Though the details will be different for each project, show off what your software can do! Screenshots and video are likely helpful. Include graphs or other data if appropriate.
