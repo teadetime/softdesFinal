@@ -1,5 +1,6 @@
 ---
 title: Testign title
+layout:default
 content: antohre tesr
 ---
 <div class="blurb">
