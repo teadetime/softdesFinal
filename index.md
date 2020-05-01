@@ -42,7 +42,10 @@ Originally there were plans to build a formal gui for this tool. These plans wer
 ## The Future
 We tried to design our program and data structures in a way that could be expanded and moved to potentially other colleges. Whether this is practical is an entirely different matter. Olin has a very unique set of requirements but with little adaptation this could be applied to other school's courses and majors. Development is going to pause on this project as we have other responsibilities at the moment. 
 
-## Usage and Implementation information 
+
+## Implementation information and usage
+For a usage guide please refer to the [Readme](/README.md)
+TODO:
 Code doesn’t tell a story by itself. Use more effective methods such as flowcharts and architectural, class, or sequence diagrams to explain how your code works. You could consider including or linking to snippets of code to highlight a particularly crucial segment.
 ```py
 def clean_course_list(self, course_lst, semester=None):
@@ -53,17 +56,6 @@ def clean_course_list(self, course_lst, semester=None):
     """
     return [course for course in course_lst if self.valid_course(course, semester)]
 ```
-
-## Saving Schedules
-This is the default folder that schedules get saved into when the program is run
-
-### How to delete
-
-### How to load
-
-### Difference between .pkl and .txt
-
-### What are these wierd filenames?!
 
 ## Attribution 
 This project relies heavily on the Beautiful Soup 4 ppyhton library which is used to scrape Olin's online catalog. 
