@@ -43,8 +43,7 @@ Originally there were plans to build a formal gui for this tool. These plans wer
 We tried to design our program and data structures in a way that could be expanded and moved to potentially other colleges. Whether this is practical is an entirely different matter. Olin has a very unique set of requirements but with little adaptation this could be applied to other school's courses and majors. Development is going to pause on this project as we have other responsibilities at the moment. 
 
 
-## Implementation information and usage
-For a usage guide please refer to the [Readme](/README.md)
+## Implementation information
 TODO:
 Code doesn’t tell a story by itself. Use more effective methods such as flowcharts and architectural, class, or sequence diagrams to explain how your code works. You could consider including or linking to snippets of code to highlight a particularly crucial segment.
 ```py
@@ -56,6 +55,28 @@ def clean_course_list(self, course_lst, semester=None):
     """
     return [course for course in course_lst if self.valid_course(course, semester)]
 ```
+## Usage
+Coppied fro our [Readme](/README.md)
+### Usage/Building a schedule
+1. Execute the main script via command line:
+
+        python3 bottom_up.py
+2. If the script detects previously saved schedules, you will be asked if you want to load them, you can do this by specifying the number in parantheses. See screen capture below
+![A Rough Digram](/docs/loadSaved.PNG)
+
+3. The script will now display which semester is being built and will show degree requirement. These are split into sections of classes which you must take all of. As well as sections of classes where you must only take one class form a short list, we refer to these as "One-Offs" ![A Rough Digram](/docs/oneOffs.PNG)
+
+4. COLORCOSING?!? Adi?
+
+5. With this information the program asks you to input what course you would like to add to your schedule for the semester. The inpput must be crns, they can be either case, and sperated by spaces, commas, or both.Note that the crn's for loa and study away are "LOA" and "STUDY_AWAY" respectively. See screenshot below for a valid input.![A Rough Digram](/docs/inputStyles.PNG)
+
+6. If input is either not a valid crn, or the crn you have inputted cannot be taken at this time you will receive an error message and you must re-enter valid courses for that semester. This capture shows a potential error message: ![A Rough Digram](/docs/crnError.PNG)
+
+7. If the CRN's given are valid then the user is greeted with ascii charts indicating how close the student is to completing the general graduation requirements(seen above). 
+
+8. The user will presented with another choice that dictates how to continue the program. A user can save their schedule so that it can be built off of another time, they can simply continue to the next semestet, or they can specify a semester to plan for (past or future). Quitting the program is also possible. The most important feature here is that you can do multiple things at once. If there is an 's' in your input the schedule will be saved ('sq', 's10', '5s'). Likewise a 'q' in the input will close the program, if there is an 's' it will save before terminating. See below for an example of saving and moving to edit a previous semester.
+
+4. When you have reached the desired level of completion of your schedule you can save and exit the program. The output is saved in the working directory/savedSchedules/_filename_.txt
 
 ## Attribution 
 This project relies heavily on the Beautiful Soup 4 ppyhton library which is used to scrape Olin's online catalog. 
