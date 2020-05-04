@@ -2,26 +2,21 @@
 title: Olin Course Scheduling Assistant
 description: some description
 ---
+## What is this/ What does this do!?
+Here we have built a student course scheduling assistant/tool for Olin College of Engineering. This Python Command Line tool can be used to achieve several different results. One option is to simply input your schedule as it sits and validate for any errors like a lack of pre-reqs, and track degree and requirement progress(See first image). Another option is to generate a slew of schedules that help you plan out for less-than-ideal situations where you can't take the classes you desire. This tool allows students to quickly and easily generate potential course schdedules so that they can be prepared for potential changes. Students can easily view, maintain, build, and test many different schedules to determine their best option. Schedules are stored as a readable .txt file (second picture below)
+INSERT ERROR IMAGE
 
-## Why did we do this? 
-Worrying about graduating isn't fun! We are both students at Olin College of Engineering and thought that we could alleviate some of this stress. By looking at all course offerings and major requirements we believe that we can help automate that process of building a course schedule for your college career.
-Here's a quick screenshot of where this is right now:
-
-## Usage/Installation ->README
-This software was developed on both Windows and Linux environments. However, we recommend using linux to run this as it handles our text output and interface much better.
-Please check out the readme to understand how to use this tool
-[View Readme](/README.md)
+INSERT TEXT FILE SNIPPET
 
 ## Results/What this does
-Please take alook at the doc [View Saving Documentation](/saved_schedules/saving_readme.md)
-This tool can be used to achieve several different results. One option is to simply input your schedule as it sits and validate for any errors like a lack of Pre-Reqs etc. Another option is to generate a slew of schedules that let you plan out for less-ideal situations and make sure that you can have a plan if things don't go your way. This tool makes it possible to see flexibility with multiple schedules rather than storing all of these options mentally.
-Here you can see what completed schedule looks like(saved as .txt file):
+This tool can be used to achieve several different results. 
 
-INSERT IMAGE
+## Who made this?
+This project was co-developed by [Nathan Faber](https://github.com/teadetime "@teadetime") and [Adi Ramachandran](https://github.com/aramachandran7 "@teadetime") for the Olin community and as a project for the course Software Design at [Olin College of Engineering](https://github.com/olin).
 
-You can also see warning messages when trying to register for courses that you don't have the pre-reqs for:
-
-INSERT IMAGE
+## Why did we do this? 
+Worrying about graduating isn't fun! We are both students at Olin and saw this as a stress and thought that we could do something about it. By looking at all course offerings and major requirements we believe that we can help automate that process of building a course schedule for your college career.
+Here's a quick screenshot of where this is right now:
 
 Though the details will be different for each project, show off what your software can do! Screenshots and video are likely helpful. Include graphs or other data if appropriate.
 
@@ -55,8 +50,12 @@ def clean_course_list(self, course_lst, semester=None):
     """
     return [course for course in course_lst if self.valid_course(course, semester)]
 ```
-## Usage
-Coppied fro our [Readme](/README.md)
+## Usage/Installation ->README
+This software was developed on both Windows and Linux environments. However, we recommend using linux to run this as it handles our text output and interface much better.
+Please check out the readme to understand how to use this tool
+[View Readme](/README.md)
+
+
 ### Usage/Building a schedule
 1. Execute the main script via command line:
 
