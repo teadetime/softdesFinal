@@ -2,8 +2,15 @@
 title: Olin Course Scheduling Assistant
 description: some description
 ---
+## Super Big Picture overview!
+Hi Guys! We're [Nathan Faber](https://github.com/teadetime "@teadetime") and [Adi Ramachandran](https://github.com/aramachandran7 "@teadetime"), two first years at the Olin College of Engineering. 
+For our Software Design course final project, we decided to **build a command-line based course scheduling tool to help students intelligently plan their academic course progression at the Olin College of Engineering**. 
+
+Built with over 1000 lines of python code, the tool **enables students to build a schedule that meets graduation and major requirements and fulfills all course prerequisites, based on information scraped from the Olin online Course Catalog.** 
+We as students recognize the difficulty in choosing courses when you must balance interesting options and ones that fulfill your essential graduation and major requirements. We also recognize the superiority of command-line-based user interfaces. **Scroll down to learn more about our work!** 
+
 ## What is this/ What does this do!?
-Here we have built a student course scheduling assistant/tool for Olin College of Engineering. This Python Command Line tool can be used to achieve several different results. One option is to simply input your schedule as it sits and validate for any errors like a lack of pre-reqs, and track degree and requirement progress(See first image). Another option is to generate a slew of schedules that help you plan out for less-than-ideal situations where you can't take the classes you desire. This tool allows students to quickly and easily generate potential course schdedules so that they can be prepared for potential changes. Students can easily view, maintain, build, and test many different schedules to determine their best option. Schedules are stored as a readable .txt file (second picture below)
+Here we have built a student course scheduling assistant/tool for Olin College of Engineering. This Python Command Line tool can be used to achieve several different results. One option is to simply input your schedule as it sits and validate for any errors like a lack of pre-reqs, and track degree and requirement progress(See first image). ~~Another option is to generate a slew of schedules that help you plan out for less-than-ideal situations where you can't take the classes you desire.~~ This tool allows students to quickly and easily generate potential course schedules so that they can be prepared for potential changes. Students can easily view, maintain, build, and test many different schedules to determine their best option. Schedules are stored as a readable .txt file (second picture below)
 INSERT ERROR IMAGE
 
 INSERT TEXT FILE SNIPPET
@@ -11,11 +18,13 @@ INSERT TEXT FILE SNIPPET
 ## Results/What this does
 This tool can be used to achieve several different results. 
 
+INSERT RESULT .TXT FILE IMAGES
+
 ## Who made this?
 This project was co-developed by [Nathan Faber](https://github.com/teadetime "@teadetime") and [Adi Ramachandran](https://github.com/aramachandran7 "@teadetime") for the Olin community and as a project for the course Software Design at [Olin College of Engineering](https://github.com/olin).
 
 ## Why did we do this? 
-Worrying about graduating isn't fun! We are both students at Olin and saw this as a stress and thought that we could do something about it. By looking at all course offerings and major requirements we believe that we can help automate that process of building a course schedule for your college career.
+Worrying about graduating isn't fun! We are both students at Olin and saw this as a stress and thought that we could do something about it. By taking in all course offerings and major requirements we believe that we can help students make quicker, more informed decisions when building a course schedule for their time in college.
 Here's a quick screenshot of where this is right now:
 
 Though the details will be different for each project, show off what your software can do! Screenshots and video are likely helpful. Include graphs or other data if appropriate.
@@ -23,20 +32,20 @@ Though the details will be different for each project, show off what your softwa
 ## Project Evolution
 Our original goals for this project were centered around making the scheduling process entirely automatic. This would allow students to basically see many different permutations of their schedule and see if ceratin choices significantly limited their options or potential to graduate.
 
-It became clear early on that while this may have been possible, we lacked a lot of data that would make this data useful. We scoped the project down to an assistant that would help students understand which courses they needed to take for requirements and would easily let them store different variations. This was a logical choice because it was more realistic and would require almost the exact same architecture. This meant that moving forward we wouldn't need to do a complete redesign to implement more automatic approaches.
+It became clear early on that while this may have been possible, we lacked a lot of data that would make this data useful. We scoped the project down to an assistant that would help students understand which courses they needed to take for requirements, would let students build schedules iteratively, providing advice and recommendations along the way, adn would easily let students store different variations of their custom schedules. This was a logical choice because it was more realistic and would require a similar architecture, but would be a more usable and useful end product. This meant that moving forward we wouldn't need to do a complete redesign to implement more automatic approaches.
 
-By the time of our first code review we had succesfully parsed all of the major requirements and courses form Olin's site. We had a rough idea of how we would store and build schedules but no code. By our second review we had written out a large amount of background and helper funcitons that allowed us to interact with course and requirement data, as well as user input. From this point we worked to flesh outa workflow that users could viably use to build schedules, leading to most recent design changes reagrding what information and controls the user has while running the program.
+By the time of our first code review we had successfully parsed all of the major requirements and courses form Olin's site. We had a rough idea of how we would store and build schedules, but no code or structure. By our second review we had written out a large amount of background and helper functions that allowed us to interact with course and requirement data, as well as user input. From this point we worked to flesh out a backend and frontend workflow that users would interact with to build their schedules, leading to most recent design changes regarding what information and controls would be presented to users while running the program and building their schedules, semester by semester.
 
 _Why a command line tool?_
 
-Originally there were plans to build a formal gui for this tool. These plans were shelved as we built the core of the application. We also feel that a Command line tool in this application is actually very usable so have devoted efforts elsewhere. In the future we would consider making a GUI as it would make this tool easier and more logical to use.
+Originally there were plans to build a formal gui for this tool. These plans were shelved as we built the core of the application. We also feel that a Command line tool in this application is actually quite usable, and enables us to devote efforts elsewhere, mainly to core functionality. In the future we may consider making a GUI, perhaps a web-based one, as it would make this tool more accessible to use.
 
 ## What we Learned
-**Scheduling is hard!** One of the larest roadblocks we ran into was the fact that courses aren't consistentyl offered year to year at Olin. This information is necessary to make this process more automated. There is also nto data for us to take into account for classes that may be offered at the same time during the day. We actually had to register for classes while working on this project, it seems that in many cases student's aren't particularly worried with how the rest of course fit in but more how they can get the courses they want. 
+**Scheduling is hard!** By far the biggest and still unresolved challenge we faced is that courses are not consistently offered on a semester by semester or even year by year basis at Olin. This information is absolutely necessary to make this program usable, let alone completely automating the process. There is also nto data for us to take into account for classes that may be offered at the same time during the day. We actually had to register for classes while working on this project, it seems that in many cases students aren't particularly worried with how the rest of course fit in, in the big picture but more how they can get the courses they want. 
 
 ## The Future
-We tried to design our program and data structures in a way that could be expanded and moved to potentially other colleges. Whether this is practical is an entirely different matter. Olin has a very unique set of requirements but with little adaptation this could be applied to other school's courses and majors. Development is going to pause on this project as we have other responsibilities at the moment. 
-
+We tried to design our program and data structures in a way that could be scaled to other colleges' courses and scheduling systems. Whether this is practical is an entirely different matter. Olin has a very unique set of requirements but with little adaptation this could certainly be applied to other school's courses and majors. Development is going to pause on this project as we have other responsibilities at the moment. 
+The biggest change we would add on top of the current system, if we had the time, would be to check for inconsistent course offerings depending on the semester & year. That would make a huge difference in the usability of the software. 
 
 ## Implementation information
 TODO:

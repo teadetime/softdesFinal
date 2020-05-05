@@ -328,6 +328,9 @@ class Schedule:
         # TODO: Display what one off seciotns still ened to be taken
         preSemesterProgress = self.get_general_progress(tuple_flag=True)
         # Present possible options based on major Requirements
+
+        # DISPLAY_MAJOR_REQUIREMENTS BELOW
+
         major_requirements = self.get_required_major_courses(semester, add_reqs_abs=True, add_reqs_one=False)
         absolute = major_requirements['major_abs_requirements']
         one_offs = major_requirements['major_one_requirements']
@@ -340,6 +343,11 @@ class Schedule:
             print('\nOf One-Off requirements these are available (options with pre-reqs removed)')
             # ge the course names via a list copmrehension
             print([(course, self.catalog[course]['course_nm']) for course in section])
+
+
+        # DISPLAY_MAJOR_REQUIREMENTS ABOVE
+
+
         # TODO: write helper function that takes a list of courses and nicely displays them
         choices = []
         # make sure uppercase because all CRNs are, handle, commas, spaces, or both
