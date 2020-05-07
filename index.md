@@ -2,34 +2,31 @@
 title: Olin Course Scheduling Assistant
 description: some description
 ---
-## Super Big Picture overview!
+## A Super Big Picture overview!
 Hi Guys! We're [Nathan Faber](https://github.com/teadetime "@teadetime") and [Adi Ramachandran](https://github.com/aramachandran7 "@teadetime"), two first years at the Olin College of Engineering. 
 For our Software Design course final project, we decided to **build a command-line based course scheduling tool to help students intelligently plan their academic course progression at the Olin College of Engineering**. 
 
 Built with over 1000 lines of python code, the tool **enables students to build a schedule that meets graduation and major requirements and fulfills all course prerequisites, based on information scraped from the Olin online Course Catalog.** 
 We as students recognize the difficulty in choosing courses when you must balance interesting options and ones that fulfill your essential graduation and major requirements. We also recognize the superiority of command-line-based user interfaces. **Scroll down to learn more about our work!** 
 
-## What is this/ What does this do!?
-Here we have built a student course scheduling assistant/tool for Olin College of Engineering. This Python Command Line tool can be used to achieve several different results. One option is to simply input your schedule as it sits and validate for any errors like a lack of pre-reqs, and track degree and requirement progress(See first image). ~~Another option is to generate a slew of schedules that help you plan out for less-than-ideal situations where you can't take the classes you desire.~~ This tool allows students to quickly and easily generate potential course schedules so that they can be prepared for potential changes. Students can easily view, maintain, build, and test many different schedules to determine their best option. Schedules are stored as a readable .txt file (second picture below)
+
+## Who we are, and why we did this.
+Nathan and Adi are both big fans of software and writing high quality, repoducable code. For our software design project, we decided we wanted to do something with real impact - even within the walls of our own school. 
+
+Worrying about graduating isn't fun! As students we both see this process as a huge stress and thought that we could do something about it. By taking in all course offerings and major requirements we believe that we can help students make quicker, more informed decisions when building a course schedule for their time in college.
+
+
+## More details, and some results!
+
+In essence, we built a student course scheduling assistant/tool for Olin College of Engineering. This Python Command Line tool can be used to help a student build up their schedule, providing course recommendations based on requirements along the way, or could simply be used to validate a schedule and ensure that it meets all graduating and major requirements. This tool allows students to quickly and easily generate potential course schedules so that they can be prepared for potential changes in course offerings, etc. Students can easily view, maintain, build, and test many different schedules iteratively to determine the option that is best for them. Schedules are stored as a readable .txt file (second picture below)
+
+Here's a quick screenshot of where this is right now:
+
 INSERT ERROR IMAGE
 
 INSERT TEXT FILE SNIPPET
 
-## Results/What this does
-This tool can be used to achieve several different results. 
-
-INSERT RESULT .TXT FILE IMAGES
-
-## Who made this?
-This project was co-developed by [Nathan Faber](https://github.com/teadetime "@teadetime") and [Adi Ramachandran](https://github.com/aramachandran7 "@teadetime") for the Olin community and as a project for the course Software Design at [Olin College of Engineering](https://github.com/olin).
-
-## Why did we do this? 
-Worrying about graduating isn't fun! We are both students at Olin and saw this as a stress and thought that we could do something about it. By taking in all course offerings and major requirements we believe that we can help students make quicker, more informed decisions when building a course schedule for their time in college.
-Here's a quick screenshot of where this is right now:
-
-Though the details will be different for each project, show off what your software can do! Screenshots and video are likely helpful. Include graphs or other data if appropriate.
-
-## Project Evolution
+## Our Project Evolution
 Our original goals for this project were centered around making the scheduling process entirely automatic. This would allow students to basically see many different permutations of their schedule and see if ceratin choices significantly limited their options or potential to graduate.
 
 It became clear early on that while this may have been possible, we lacked a lot of data that would make this data useful. We scoped the project down to an assistant that would help students understand which courses they needed to take for requirements, would let students build schedules iteratively, providing advice and recommendations along the way, adn would easily let students store different variations of their custom schedules. This was a logical choice because it was more realistic and would require a similar architecture, but would be a more usable and useful end product. This meant that moving forward we wouldn't need to do a complete redesign to implement more automatic approaches.
@@ -42,6 +39,8 @@ Originally there were plans to build a formal gui for this tool. These plans wer
 
 ## What we Learned
 **Scheduling is hard!** By far the biggest and still unresolved challenge we faced is that courses are not consistently offered on a semester by semester or even year by year basis at Olin. This information is absolutely necessary to make this program usable, let alone completely automating the process. There is also nto data for us to take into account for classes that may be offered at the same time during the day. We actually had to register for classes while working on this project, it seems that in many cases students aren't particularly worried with how the rest of course fit in, in the big picture but more how they can get the courses they want. 
+
+Additionally, because of website layouts, we found it easier for this project to only provide the tool for ECE and MechE majors - Olin's other majors, like E:C, E:R, and E:D have looser requirements and less of a need for a tool like this - their requirements are also stored in a different website format that we will scrape from at a later date. 
 
 ## The Future
 We tried to design our program and data structures in a way that could be scaled to other colleges' courses and scheduling systems. Whether this is practical is an entirely different matter. Olin has a very unique set of requirements but with little adaptation this could certainly be applied to other school's courses and majors. Development is going to pause on this project as we have other responsibilities at the moment. 
@@ -74,7 +73,7 @@ Please check out the readme to understand how to use this tool
 
 3. The script will now display which semester is being built and will show degree requirement. These are split into sections of classes which you must take all of. As well as sections of classes where you must only take one class form a short list, we refer to these as "One-Offs" ![A Rough Digram](/docs/oneOffs.PNG)
 
-4. COLORCOSING?!? Adi?
+4. In order to make some of the text more readable and interactable, we colorcode much of the text spit out, to help users make faster, more informed decisions. 
 
 5. With this information the program asks you to input what course you would like to add to your schedule for the semester. The inpput must be crns, they can be either case, and sperated by spaces, commas, or both.Note that the crn's for loa and study away are "LOA" and "STUDY_AWAY" respectively. See screenshot below for a valid input.![A Rough Digram](/docs/inputStyles.PNG)
 
