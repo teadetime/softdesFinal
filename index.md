@@ -2,7 +2,7 @@
 title: Olin Course Scheduling Assistant
 description: some description
 ---
-## A Super Big Picture overview!
+## A big picture overview!
 Hi Guys! We're [Nathan Faber](https://github.com/teadetime "@teadetime") and [Adi Ramachandran](https://github.com/aramachandran7 "@teadetime"), two first years at the Olin College of Engineering. 
 For our Software Design course final project, we decided to **build a command-line based course scheduling tool to help students intelligently plan their academic course progression at the Olin College of Engineering**. 
 
@@ -26,13 +26,13 @@ In essence, we built a student course scheduling assistant/tool for Olin College
 
 __Some Key screenshots:__
 
-The degree helper (this indicates what courses you can and need to take as well as their pre-reqs):
+The degree helper (this indicates what courses you can and need to take as well as their pre-reqs) ***based on the users schedule**:
 ![Degree Helper](/docs/reqProgress.PNG)
 
 Schedules can also be saved as nice text file:
 ![Saved Output](/docs/savedSchedule.PNG)
 
-## Our Project Evolution
+## Project evolution
 Our original goals for this project were centered around making the scheduling process entirely automatic. This would allow students to basically see many different permutations of their schedule and see if ceratin choices significantly limited their options or potential to graduate.
 
 It became clear early on that while this may have been possible, we lacked a lot of data that would make this data useful. We scoped the project down to an assistant that would help students understand which courses they needed to take for requirements, would let students build schedules iteratively, providing advice and recommendations along the way, adn would easily let students store different variations of their custom schedules. This was a logical choice because it was more realistic and would require a similar architecture, but would be a more usable and useful end product. This meant that moving forward we wouldn't need to do a complete redesign to implement more automatic approaches.
@@ -67,24 +67,21 @@ The implementation of our tool can be broken down into two main steps
     __While this isn't a fully automated solution we have built most all of the groundwork to create automatically generated schedules. This was an intentional design choice on our part.__
 
 
-## What we Learned
+## What we learned
 **Scheduling is hard!** By far the biggest and still unresolved challenge we faced is that courses are not consistently offered on a semester by semester or even year by year basis at Olin. This information is absolutely necessary to make this program usable, let alone completely automating the process. There is also nto data for us to take into account for classes that may be offered at the same time during the day. We actually had to register for classes while working on this project, it seems that in many cases students aren't particularly worried with how the rest of course fit in, in the big picture but more how they can get the courses they want. 
 
 Additionally, because of website layouts, we found it easier for this project to only provide the tool for ECE and MechE majors - Olin's other majors, like E:C, E:R, and E:D have looser requirements and less of a need for a tool like this - their requirements are also stored in a different website format that we will scrape from at a later date. 
 
-## The Future
+## The future
 We tried to design our program and data structures in a way that could be scaled to other colleges' courses and scheduling systems. Whether this is practical is an entirely different matter. Olin has a very unique set of requirements but with little adaptation this could certainly be applied to other school's courses and majors. Development is going to pause on this project as we have other responsibilities at the moment. 
 The biggest change we would add on top of the current system, if we had the time, would be to check for inconsistent course offerings depending on the semester & year. That would make a huge difference in the usability of the software. 
 
-
-
-## Usage/Installation ->README
+## Usage/Building a schedule
 This software was developed on both Windows and Linux environments. However, we recommend using linux to run this as it handles our text output and interface much better.
-Please check out the readme to understand how to use this tool
-[View Readme](/README.md)
+Please check out the readme to understand how to use install this tool
+[view the Readme](/README.md)
 
-
-### Usage/Building a schedule
+__Running the tool!__
 1. Execute the main script via command line:
 
         python3 bottom_up.py
