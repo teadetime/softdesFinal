@@ -106,4 +106,4 @@ Please check out the readme to understand how to use this tool
 4. When you have reached the desired level of completion of your schedule you can save and exit the program. The output is saved in the working directory/savedSchedules/_filename_.txt
 
 ## Attribution 
-This project relies heavily on the Beautiful Soup 4 ppyhton library which is used to scrape Olin's online catalog. 
+This project relies heavily on the Beautiful Soup 4 python library which is used to scrape Olin's online catalog. 
