@@ -7,8 +7,10 @@ Hi Guys! We're [Nathan Faber](https://github.com/teadetime "@teadetime") and [Ad
 For our Software Design course final project, we decided to **build a command-line based course scheduling tool to help students intelligently plan their academic course progression at the Olin College of Engineering**. 
 
 Built with over 1000 lines of python code, the tool **enables students to build a schedule that meets graduation and major requirements and fulfills all course prerequisites, based on information scraped from the Olin online Course Catalog.** 
-We as students recognize the difficulty in choosing courses when you must balance interesting options and ones that fulfill your essential graduation and major requirements. We also recognize the superiority of command-line-based user interfaces. **Scroll down to learn more about our work!** 
-![A Rough Digram](/docs/generalUse.PNG)
+We as students recognize the difficulty in choosing courses when you must balance interesting options and ones that fulfill your essential graduation and major requirements. We also recognize the superiority of command-line-based user interfaces. **Below shows our program in use!**
+![General use](/docs/generalUse.PNG)
+
+**Scroll down to learn more about our work!** 
 
 ## Who we are, and why we did this.
 Nathan and Adi are both big fans of software and writing high quality, repoducable code. For our software design project, we decided we wanted to do something with real impact - even within the walls of our own school. 
