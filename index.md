@@ -90,7 +90,7 @@ __Running the tool!__
 
 3. The script will now display which semester is being built. If you insert "__*__" it will show degree requirements. and progress towards these requirements. These are split into sections of classes which you must take all of. As well as sections of classes where you must only take one class form a short list, we refer to these as "One-Offs"(Pictured Below) ![A Rough Digram](/docs/oneOffs.PNG)
 
-In order to make some of the text more readable and interactable, we colorcode much of the text spit out, to help users make faster, more informed decisions. 
+   In order to make some of the text more readable and interactable, we colorcode much of the text spit out, to help users make faster, more informed decisions. 
 
 5. With this information the program asks you to input what course you would like to add to your schedule for the semester. The inpput must be crns, they can be either case, and sperated by spaces, commas, or both.Note that the crn's for loa and study away are "LOA" and "STUDY_AWAY" respectively. See screenshot below for a valid input.![A Rough Digram](/docs/inputStyles.PNG)
 
@@ -100,7 +100,7 @@ In order to make some of the text more readable and interactable, we colorcode m
 
 8. The user will presented with another choice that dictates how to continue the program. A user can save their schedule so that it can be built off of another time, they can simply continue to the next semestet, or they can specify a semester to plan for (past or future). Quitting the program is also possible. The most important feature here is that you can do multiple things at once. If there is an 's' in your input the schedule will be saved ('sq', 's10', '5s'). Likewise a 'q' in the input will close the program, if there is an 's' it will save before terminating. See below for an example of saving and moving to edit a previous semester.
 
-4. When you have reached the desired level of completion of your schedule you can save and exit the program. The output is saved in the working directory/savedSchedules/_filename_.txt
+9. When you have reached the desired level of completion of your schedule you can save and exit the program. The output is saved in the working directory/savedSchedules/_filename_.txt
 
 ## Attribution 
 This project relies heavily on the Beautiful Soup 4 python library which is used to scrape Olin's online catalog. 
