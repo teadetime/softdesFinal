@@ -53,7 +53,7 @@ The implementation of our tool can be broken down into two main steps
 
 2. Building schedule for a given user (key functions)
 
-   *The follwoing functions allow the user to intelligently build a schedule semester by semester while adhering to scheduling rules*
+   *The following functions allow the user to intelligently build a schedule semester by semester while adhering to scheduling rules*
     1. Check if course has been taken before
     1. Check if course can be taken during give semester
     1. Determine requirements that have and have not been met
@@ -88,9 +88,9 @@ __Running the tool!__
 2. If the script detects previously saved schedules, you will be asked if you want to load them, you can do this by specifying the number in parantheses. See screen capture below
 ![A Rough Digram](/docs/loadSaved.PNG)
 
-3. The script will now display which semester is being built and will show degree requirement. These are split into sections of classes which you must take all of. As well as sections of classes where you must only take one class form a short list, we refer to these as "One-Offs" ![A Rough Digram](/docs/oneOffs.PNG)
+3. The script will now display which semester is being built. If you insert "__*__" it will show degree requirements. and progress towards these requirements. These are split into sections of classes which you must take all of. As well as sections of classes where you must only take one class form a short list, we refer to these as "One-Offs"(Pictured Below) ![A Rough Digram](/docs/oneOffs.PNG)
 
-4. In order to make some of the text more readable and interactable, we colorcode much of the text spit out, to help users make faster, more informed decisions. 
+In order to make some of the text more readable and interactable, we colorcode much of the text spit out, to help users make faster, more informed decisions. 
 
 5. With this information the program asks you to input what course you would like to add to your schedule for the semester. The inpput must be crns, they can be either case, and sperated by spaces, commas, or both.Note that the crn's for loa and study away are "LOA" and "STUDY_AWAY" respectively. See screenshot below for a valid input.![A Rough Digram](/docs/inputStyles.PNG)
 
