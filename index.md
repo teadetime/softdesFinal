@@ -7,7 +7,9 @@ Hi Guys! We're [Nathan Faber](https://github.com/teadetime "@teadetime") and [Ad
 For our Software Design course final project, we decided to **build a command-line based course scheduling tool to help students intelligently plan their academic course progression at the Olin College of Engineering**. 
 
 Built with over 1000 lines of python code, the tool **enables students to build a schedule that meets graduation and major requirements and fulfills all course prerequisites, based on information scraped from the Olin online Course Catalog.** 
-We as students recognize the difficulty in choosing courses when you must balance interesting options and ones that fulfill your essential graduation and major requirements. We also recognize the superiority of command-line-based user interfaces. **Below shows our program in use!**
+We as students recognize the difficulty in choosing courses when you must balance interesting options and ones that fulfill your essential graduation and major requirements. We also recognize the superiority of command-line-based user interfaces. 
+
+**The image below shows our program in use!**
 ![General use](/docs/generalUse.PNG)
 
 **Scroll down to learn more about our work!** 
@@ -22,12 +24,12 @@ Worrying about graduating isn't fun! As students we both see this process as a h
 
 In essence, we built a student course scheduling assistant/tool for Olin College of Engineering. This Python Command Line tool can be used to help a student build up their schedule, providing course recommendations based on requirements along the way, or could simply be used to validate a schedule and ensure that it meets all graduating and major requirements. This tool allows students to quickly and easily generate potential course schedules so that they can be prepared for potential changes in course offerings, etc. Students can easily view, maintain, build, and test many different schedules iteratively to determine the option that is best for them. Schedules are stored as a readable .txt file
 
-__Some simple screenshots:__
+__Some Key screenshots:__
 
-The degree helper:
+The degree helper (this indicates what courses you can and need to take as well as their pre-reqs):
 ![Degree Helper](/docs/reqProgress.PNG)
 
-Saved output format:
+Schedules can also be saved as nice text file:
 ![Saved Output](/docs/savedSchedule.PNG)
 
 ## Our Project Evolution
@@ -41,6 +43,30 @@ _Why a command line tool?_
 
 Originally there were plans to build a formal gui for this tool. These plans were shelved as we built the core of the application. We also feel that a Command line tool in this application is actually quite usable, and enables us to devote efforts elsewhere, mainly to core functionality. In the future we may consider making a GUI, perhaps a web-based one, as it would make this tool more accessible to use.
 
+## Implementation information
+The implementation of our tool can be broken down into two main steps
+1. Parsing of courses and degree requirements from online [Olin Catalog](https://olin.smartcatalogiq.com/en/2019-20/Catalog/Courses-Credits-Hours)
+    * This involved Beautiful Soup to parse html that contained all of these requirements
+    * Heavy amounts of edge case handling and formatting (Olin has many weird requirements formats)
+    * Storing this data so it isn't parsed each time. We opted to pickle this data as a dictionary
+        ![Course Dictionary](/docs/courseDict.PNG)
+
+2. Building schedule for a given user (key functions)
+
+   *The follwoing functions allow the user to intelligently build a schedule semester by semester while adhering to scheduling rules*
+    1. Check if course has been taken before
+    1. Check if course can be taken during give semester
+    1. Determine requirements that have and have not been met
+    1. Get pre-reqs recursively for a course
+    1. Calculate credits in each field and progress to general requirements
+    1. Other important but non-algorithmic work that had to be done:
+        * Input Validation
+        * Loading saved data (courses and other schedules)
+        * Formatting output and prompts
+        
+    __While this isn't a fully automated solution we have built most all of the groundwork to create automatically generated schedules. This was an intentional design choice on our part.__
+
+
 ## What we Learned
 **Scheduling is hard!** By far the biggest and still unresolved challenge we faced is that courses are not consistently offered on a semester by semester or even year by year basis at Olin. This information is absolutely necessary to make this program usable, let alone completely automating the process. There is also nto data for us to take into account for classes that may be offered at the same time during the day. We actually had to register for classes while working on this project, it seems that in many cases students aren't particularly worried with how the rest of course fit in, in the big picture but more how they can get the courses they want. 
 
@@ -50,18 +76,8 @@ Additionally, because of website layouts, we found it easier for this project to
 We tried to design our program and data structures in a way that could be scaled to other colleges' courses and scheduling systems. Whether this is practical is an entirely different matter. Olin has a very unique set of requirements but with little adaptation this could certainly be applied to other school's courses and majors. Development is going to pause on this project as we have other responsibilities at the moment. 
 The biggest change we would add on top of the current system, if we had the time, would be to check for inconsistent course offerings depending on the semester & year. That would make a huge difference in the usability of the software. 
 
-## Implementation information
-TODO:
-Code doesn’t tell a story by itself. Use more effective methods such as flowcharts and architectural, class, or sequence diagrams to explain how your code works. You could consider including or linking to snippets of code to highlight a particularly crucial segment.
-```py
-def clean_course_list(self, course_lst, semester=None):
-    # Not sure if code is needed
-    """
-    Runs valid course on a list of courses and returns the valid ones
-    :return:
-    """
-    return [course for course in course_lst if self.valid_course(course, semester)]
-```
+
+
 ## Usage/Installation ->README
 This software was developed on both Windows and Linux environments. However, we recommend using linux to run this as it handles our text output and interface much better.
 Please check out the readme to understand how to use this tool
