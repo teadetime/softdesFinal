@@ -19,15 +19,16 @@ This project was co-developed by [Nathan Faber](https://github.com/teadetime "@t
         pip3 install -r requirements.txt
 
 ### Usage/Building a schedule
+__Running the tool!__
 1. Execute the main script via command line:
 
         python3 bottom_up.py
 2. If the script detects previously saved schedules, you will be asked if you want to load them, you can do this by specifying the number in parantheses. See screen capture below
 ![A Rough Digram](/docs/loadSaved.PNG)
 
-3. The script will now display which semester is being built and will show degree requirement. These are split into sections of classes which you must take all of. As well as sections of classes where you must only take one class form a short list, we refer to these as "One-Offs" ![A Rough Digram](/docs/oneOffs.PNG)
+3. The script will now display which semester is being built. If you insert "__*__" it will show degree requirements. and progress towards these requirements. These are split into sections of classes which you must take all of. As well as sections of classes where you must only take one class form a short list, we refer to these as "One-Offs"(Pictured Below) ![A Rough Digram](/docs/oneOffs.PNG)
 
-4. COLORCOSING?!? Adi?
+   In order to make some of the text more readable and interactable, we colorcode much of the text spit out, to help users make faster, more informed decisions. 
 
 5. With this information the program asks you to input what course you would like to add to your schedule for the semester. The inpput must be crns, they can be either case, and sperated by spaces, commas, or both.Note that the crn's for loa and study away are "LOA" and "STUDY_AWAY" respectively. See screenshot below for a valid input.![A Rough Digram](/docs/inputStyles.PNG)
 
