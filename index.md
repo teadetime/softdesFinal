@@ -8,7 +8,7 @@ For our Software Design course final project, we decided to **build a command-li
 
 Built with over 1000 lines of python code, the tool **enables students to build a schedule that meets graduation and major requirements and fulfills all course prerequisites, based on information scraped from the Olin online Course Catalog.** 
 We as students recognize the difficulty in choosing courses when you must balance interesting options and ones that fulfill your essential graduation and major requirements. We also recognize the superiority of command-line-based user interfaces. **Scroll down to learn more about our work!** 
-
+![A Rough Digram](/docs/generalUse.PNG)
 
 ## Who we are, and why we did this.
 Nathan and Adi are both big fans of software and writing high quality, repoducable code. For our software design project, we decided we wanted to do something with real impact - even within the walls of our own school. 
@@ -18,13 +18,15 @@ Worrying about graduating isn't fun! As students we both see this process as a h
 
 ## More details, and some results!
 
-In essence, we built a student course scheduling assistant/tool for Olin College of Engineering. This Python Command Line tool can be used to help a student build up their schedule, providing course recommendations based on requirements along the way, or could simply be used to validate a schedule and ensure that it meets all graduating and major requirements. This tool allows students to quickly and easily generate potential course schedules so that they can be prepared for potential changes in course offerings, etc. Students can easily view, maintain, build, and test many different schedules iteratively to determine the option that is best for them. Schedules are stored as a readable .txt file (second picture below)
+In essence, we built a student course scheduling assistant/tool for Olin College of Engineering. This Python Command Line tool can be used to help a student build up their schedule, providing course recommendations based on requirements along the way, or could simply be used to validate a schedule and ensure that it meets all graduating and major requirements. This tool allows students to quickly and easily generate potential course schedules so that they can be prepared for potential changes in course offerings, etc. Students can easily view, maintain, build, and test many different schedules iteratively to determine the option that is best for them. Schedules are stored as a readable .txt file
 
-Here's a quick screenshot of where this is right now:
+__Some simple screenshots:__
 
-INSERT ERROR IMAGE
+The degree helper:
+![Degree Helper](/docs/reqProgress.PNG)
 
-INSERT TEXT FILE SNIPPET
+Saved output format:
+![Saved Output](/docs/savedSchedule.PNG)
 
 ## Our Project Evolution
 Our original goals for this project were centered around making the scheduling process entirely automatic. This would allow students to basically see many different permutations of their schedule and see if ceratin choices significantly limited their options or potential to graduate.
