@@ -2,19 +2,13 @@ from scrapeOlin import Major, pickle_data, load_pickle_data
 from datetime import datetime
 import os
 import glob
-import time
 import re
-"""
-Stuff to work on:
-co recs, semeseter availability, forge_semester(),
-
-"""
-
 
 class Schedule:
     """
-       This class represents your entrire stay at olin aka 10 semesters max?
-       can be stored locally to save progress or specific plans that are generated"""
+       This class represents your entire stay at Olin
+       can be stored locally to save progress or specific plans that are generated
+       This class also contains methods to modify and save this schedule"""
 
     def __init__(self, pot_majors, course_catalog, schedule=[], major_nm='ME'):
         """
@@ -29,7 +23,7 @@ class Schedule:
         self.major = major_nm
         self.catalog = course_catalog
         self.schedule = schedule
-        self.loa_credits = {'engr': 0, 'ahse': 0}
+        self.loa_credits = {'engr': 0, 'ahse': 0} # These are lost when a aschedule is reloaded with these fields
         self.study_away_credits = {'engr': 0, 'ahse': 0, 'sci': 0, 'mth': 0}
         self.general_reqs = {'engr': 46, 'mth': 10, 'sci': 12, 'mth+sci': 30, 'ahse': 28,
                              'all': 120}  # 'ahs': 12, # we don't keep track of e credits...
@@ -50,13 +44,12 @@ class Schedule:
             if single_sem:
                 start_sem = semester - 1
             schedule = self.schedule[start_sem:semester]  # Assuming numeric input
-            # if start_sem==end_sem-1:
-            #     schedule = [schedule]
         else:
             schedule = self.schedule
         for semester in schedule:
             for crn in semester:
                 course_credits_dict = self.catalog[crn]['credit_dict']
+                # Special handling of LOA since they are specific
                 if crn == 'LOA':
                     course_credits_dict = self.loa_credits
                 elif crn == 'STUDY_AWAY':
@@ -70,14 +63,18 @@ class Schedule:
         return credits_num
 
     def get_general_progress(self, tuple_flag=False, semester=None):
-        """Sum up credits uof each type of course and compare to requirements
-        :return a dictionary with keys and values of how many credits of a filed need to be taken still"""
+        """
+        Sum up credits of each type of course and compare to requirements
+        :param tuple_flag   Iddicates whether to return credits as a tuple  of done to total, or the amt needed to do
+        :param semester Semester for which to look at progress up to
+        :return:        Returns a dictionary with keys and values of how many credits of a filed need to be taken still
+        """
         credits_left = {}
         credits_completed = {}
         for key, value in self.general_reqs.items():
             fields = key.split('+')
             field_sum = 0
-            if key == 'all':
+            if key == 'all': # Look at the total requirement aka use all credits
                 fields = [None]
             for field in fields:
                 field_sum += self.sum_credits(field, semester)
@@ -88,7 +85,6 @@ class Schedule:
             return credits_left
         else:
             return credits_completed
-
 
     def evaluate_progress(self, semester=None):
         """
@@ -103,38 +99,69 @@ class Schedule:
         return True
 
     def save_schedule(self, directory=None, filenm=None, pickled=None):
-        """Saves the current Schedule as a text file as well as a pickled object that could be reloaded """
+        """Saves the current Schedule as a text file as well as a pickled object that could be reloaded
+        :param directory:   Parameter for location of files to be saved
+        :param filenm:      Parameter for filename to be saved
+        :param pickled:     Boolean to represent whether file should be pickled or not
+        :return:            Returns Nothing.
+        """
         schedule_to_save = self.schedule
         if directory is None:
             directory = 'saved_schedules/'
+        else:
+            directory + '/'
         if filenm is None or filenm == '':
             filenm = datetime.now().strftime("%m_%d-%H_%M_%S")
         where_save = directory + filenm
         if not os.path.exists(where_save + '.txt'):
-            f = open(filenm+'.txt', "w")
-            f.write(str(schedule_to_save))
-            # TODO add in course names to the saved text file and formatting
+            f = open(filenm + '.txt', "w")
+            f.write(self.format_saved_schedule())   # Format the schedule nicely for text formatting
             f.close()
         if pickled:
             pickle_data(filenm + '.pkl', schedule_to_save, True)
         return
 
-    def get_recs(self, crn, course_lst=[]):
-        """Recursively build a list of all the courses that are needed for a given course
+    def format_saved_schedule(self):
+        """
+        Takes the current schedule class attribute and turns it into a logical string to make a nice .txt file
+        :return: Returns pretty_schedule,  the 'prettified' string output
+        """
+        pretty_schedule = ''
+        semester_num = 1
+        for semester in self.schedule:
+            pretty_schedule += ('\n\nSemester ' + str(semester_num) + ' courses\n‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾')
+            # Show CRN and Course name, and how many credits it is
+            semester_list = [(course, self.catalog[course]['course_nm'], self.catalog[course]['credit_dict']) for course
+                             in semester]
+            for crs in semester_list:
+                # Some nasty string replace
+                semester_tuple_str = '\n' + str(crs).replace(',', ' |')
+                formatted_tuple = ''.join(filter(lambda ch: ch not in "'(){}", semester_tuple_str))
+                pretty_schedule += formatted_tuple
+            # Add Credit breakdown
+            pretty_schedule += '\nCredits in Semester: ' + str(self.sum_credits(semester=semester_num, single_sem=True))
+            semester_num += 1
+
+        progress = self.display_progress(self.get_general_progress(tuple_flag=True))
+        pretty_schedule += ('\n\nCareer Credits: \n' + progress)
+        return pretty_schedule
+
+    def get_recs(self, crn, course_lst=None):
+        """Recursively build a list of all the courses that are needed for a given course,
+        Only looks at prereqs
         :param crn: CRN to ger reqs for
         :param course_lst: list to be appended to as it is passed down recursively
-        :return: list that has all of the courses that are prereqs for a course
+        :return: list that has all of the courses that are prereqs for a course as well as the course itself
         """
-
-        # TODO: what about alternate recommendations? and what about recommendedReqs?
+        if course_lst is None:
+            course_lst = []
         courses = course_lst
         courses.append(crn)
-        reqs = sum(self.catalog[crn]['pre_req'], [])  # TODO: should be changed ONLY LOOK AT the first option's recs
+        reqs = sum(self.catalog[crn]['pre_req'], [])
         # Remove duplicates
         reqs = list(set(reqs))
         for i in reqs:
-            self.get_recs(i, courses)
-        # REMOVING DUPLICATES MIGHT NTO BE NECCESARY (might want to be able to tell which recs are helpful)
+            self.get_recs(i, courses)   # Pass a mutable object into each branch
         return list(set(courses))
 
     def taken_course(self, crn, semester=None):
@@ -148,26 +175,23 @@ class Schedule:
 
     def difficulty_take(self, crn, semester=None):
         """
-        This function is intended as a helper function runnable on a crn to determine how many additional prereqs (you haven't already taken) are required
-        This is useful determining which class to take for 1 requirements (one_reqs)
-
+        This function is intended as a helper function runnable on a crn to determine how many additional prereqs
+        (you haven't already taken) are required. This will be useful determining which class to take for (one_reqs)
+        :param crn: CRN course input to reference for function
         :return: number of reqs you haven't yet taken that are required for a course
         """
-        # finding prereqs for CRN
         total_reqs = self.get_recs(crn)
-        cleaned_reqs = [req for req in total_reqs if not self.taken_course(req)]
+        cleaned_reqs = [req for req in total_reqs if not self.taken_course(req, semester)]
         # cleaned_reqs = self.clean_course_list(total_reqs, semester)
         return len(cleaned_reqs)
 
     def valid_course(self, crn, semester=None):
         """
-        Returns whether or not course can be taken
+        Returns whether or not course is 'valid' - whether or not it can be taken at the given semester
         :param crn: Course to check validity
         :param semester: semester to check if is valid
         :return: True or False whether a class can be taken for a give semester
         """
-        # TODO: Corecs?, concurrentReqs?
-
         if semester is None:  # handle semester==None
             semester = len(self.schedule)
         # start by creating course object
@@ -177,6 +201,8 @@ class Schedule:
         if self.taken_course(crn) or (
                 course['term_requirement'] is not None and course['term_requirement'] != semester):
             return False
+
+        # if the course isn't offered then it can't be taken
         term = semester % 2
         if term == 0:  # If an even term number (Spring)
             if not self.catalog[crn]['spring']:
@@ -185,7 +211,7 @@ class Schedule:
             if not self.catalog[crn]['fall']:
                 return False
 
-        # Normal Case Handling - Options indicate differnt combinations of reqs ie ENGR3110
+        # Normal Case Handling - Checking Prerequisites. Options indicate different combinations of reqs (ie ENGR3110)
         for req_option in course['pre_req']:
             # If the list empty than there aren't prereqs! Exit for loop and return true
             if len(req_option) == 0:
@@ -199,47 +225,50 @@ class Schedule:
                     if req == req_option[-1]:  # If you get to the last prereq in a pre_req track you are good!
                         return True
 
-        # TODO: Check to see if the student is in the right grade for a course?
         return False  # default case if True hasn't already been returned
 
-    def clean_course_list(self, course_lst, semester=None):
-        # Not sure if code is needed
+    def clean_course_list(self, course_lst, semester=None, taken_only=False):
         """
-        Runs valid course on a list of courses and returns the valid ones
-        :return:
+        Runs valid_course() or taken_course() on a list of courses and returns the valid or taken ones
+        For looking at requirements we only care about if class has been taken
+        :param semester: Checks to see if there is a semester to reference - defaults to None.
+        :param taken_only: Boolean to only run taken_course() or entire valid_course() function.
+        :return: Returns valid courses in a list of input courses.
         """
+        if taken_only:
+            return [course for course in course_lst if not self.taken_course(course, semester)]
         return [course for course in course_lst if self.valid_course(course, semester)]
 
     def get_required_major_courses(self, semester=None, add_reqs_abs=True, add_reqs_one=False):
         """
         :param semester: Checks to see if there is a semester to reference - defaults to None.
         :param add_reqs: If True includes all recursively generated requirements in the list and cuts duplicates
-        :return: returns a dictionary valid courses of all the types of coureses you can take.
+        :return: returns a dictionary valid courses, which contains different types of courses you can take, and prereq lists.
         """
 
         # Setting temp var lists based on total major requirements
         course_list_abs = self.major_reqs[self.major].abs_reqs
         course_list_ones = self.major_reqs[self.major].one_reqs
 
-        # Defining valid_courses dictionary that will be returned after modifications
-        valid_courses = {'major_abs_requirements': [], 'major_one_requirements': []}
+        # Defining valid_courses dictionary that will be returned after modifications/additions
+        valid_courses = {'major_abs_requirements': [], 'major_abs_prereqs': {}, 'major_one_requirements': [],
+                         'major_one_prereqs': {}}
 
+        # Add vlaid courses to the valid ocurse list
         for sub_course_list in course_list_abs:
-            # print('Sub course list', sub_course_list)
-
-            # Includes extra requirements and adds them to individual list.
-            if add_reqs_abs:
-                for course in sub_course_list:
-                    reqs = self.get_recs(course)
-                    set_1 = set(sub_course_list)
-                    set_2 = set(reqs)
-                    new_reqs = list(set_2 - set_1)
-                    sub_course_list += new_reqs
-                    # print(sub_course_list) # view the change in the list
-            # TODO: Issue with Linearity/dynamics
-            # Set's major_abs_requirements value of dictionary based on what valid courses are in the sub_list.
-            # TODO: Noc functionality to check if meeting major requirements (this only shows what you need and could take)
             valid_courses['major_abs_requirements'].append(self.clean_course_list(sub_course_list, semester))
+
+        # Includes extra pre-requirements and adds them associated with keys within a dict.
+        # Only adds prereqs to generated key if: add_req_abs is toggled true, and if the course cannot be taken.
+        if add_reqs_abs:
+            for sub_course_list in course_list_abs:
+                for course in sub_course_list:
+                    # THE BELOW LINE CONDITIONALLY EXCLUDS REGULAR ABSOLUTE COURSES THAT TAKEABLE
+                    if course not in valid_courses['major_abs_requirements'][0]:
+                        new_pre_reqs = self.get_recs(course)
+                        new_pre_reqs.remove(course)
+                        valid_courses['major_abs_prereqs'][str(course)] = self.clean_course_list(new_pre_reqs, semester,
+                                                                                                 taken_only=True)
 
         # Handling one_reqs
         for one_req_set in course_list_ones:
@@ -252,143 +281,220 @@ class Schedule:
                     break
             # Logic if set of courses is not satisfied - includes requirement handling.
             if not satisfied_bool:
-                if add_reqs_one:
-                    for course in one_req_set:
-                        # Add in the Pre reqs
-                        reqs = self.get_recs(course)
-                        set_1 = set(one_req_set)
-                        set_2 = set(reqs)
-                        new_reqs = list(set_2 - set_1)
-                        one_req_set += new_reqs
-                valid_courses['major_one_requirements'].append(self.clean_course_list(one_req_set, semester))
+                valid_courses['major_one_requirements'].append(one_req_set)
+
+        # Check has already been done if set of requirements has been satisfied with the boolean loops above.
+        if add_reqs_one:
+            counter = 0 # Corresponds to grouping
+            # Walk through sets of one_reqs
+            for one_req_set in valid_courses['major_one_requirements']:
+                # Assigns each set of one_reqs to an int key for dictionary, based on counter int
+                counter += 1
+                # Defines each grouping to a dictionary, meant to hold courses and their prereqs
+                valid_courses['major_one_prereqs'][str(counter)] = {}
+                for course in one_req_set:
+                    # walks through every course in every grouping
+                    new_pre_reqs = self.get_recs(course)
+                    new_pre_reqs.remove(course)
+                    # Accesses and sets the prereqs for each course in the grouping in the set of one_req groupings
+                    valid_courses['major_one_prereqs'][str(counter)][course] = self.clean_course_list(new_pre_reqs, semester,
+                                                                                             taken_only=True)
+
+        # Here, we finally run clean_course_list() on the major_one_requirements in the valid_courses dict
+        valid_courses['major_one_requirements'] = [self.clean_course_list(course_set, semester) for course_set in valid_courses['major_one_requirements']]
         return valid_courses
 
-
-
-    def printProgressBar (self, iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    def print_progress_bar(self, iteration, total, prefix='', length=100, fill='█'):
         """
-        Call in a loop to create terminal progress bar
-        @params:
-            iteration   - Required  : current iteration (Int)
-            total       - Required  : total iterations (Int)
-            prefix      - Optional  : prefix string (Str)
-            suffix      - Optional  : suffix string (Str)
-            decimals    - Optional  : positive number of decimals in percent complete (Int)
-            length      - Optional  : character length of bar (Int)
-            fill        - Optional  : bar fill character (Str)
-            printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+        Returns a progress bar string based on progress level, to print or save to .txt file
+        :param iteration: Current iteration within overall progress
+        :param total: Total possible progress, ideally an int
+        :param prefix: Prefix string for bar
+        :param length: Length of bar as displayed in terminal
+        :param fill: Bar Fill character
+        :return: Returns progress bar string with prefix & suffix details
         """
-        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+        suffix = 'Credits Complete'
+        percent = (str(iteration) + ' / ' + str(total))
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)
-        print('\r |%s| %s %s%% %s' % ( bar, prefix, percent, suffix), end = printEnd)
-        # Print New Line on Complete
-        if iteration == total:
-            print()
+        # made function return text so that it is easier to track print statements and it can be used to save
+        to_print = '\r |%s| %s %s %s' % (bar, prefix, percent, suffix)
+        return to_print + '\n'
 
-
-
-    def displayProgressDifference(self, preSemesterProgress, postSemesterProgress):
+    def display_progress(self, pre_semester_progress):
         """
-        Funcitonal objective:
-        display a set of progress bars for your credit requirements
-        Have the progressbars grow (or shrink) based on the differences in credits before and after this semester.
-        use sleeps and pauses effectively for ease of interpretation.
+        Displays a set of credit-based progress bars based on credit progress inputs
+        :param pre_semester_progress: Credit Progress dictionary to reference, generated via get_general_progress()
+        :return: Returns the string to be printed or saved to a .txt file
         """
-        if len(preSemesterProgress)==len(postSemesterProgress):
-            for key in preSemesterProgress:
-                self.printProgressBar(preSemesterProgress[key][0], preSemesterProgress[key][1], prefix =key + ' Credits now ', suffix = 'Complete', length = 50)
-                difference = postSemesterProgress[key][0] - preSemesterProgress[key][0]
-                for credit in range(difference):
-                    time.sleep(0.25)
-                    self.printProgressBar(preSemesterProgress[key][0] + 1 + credit, preSemesterProgress[key][1], prefix =key + ' Credits now ', suffix = 'Complete', length = 50)
-                print('')
+        ret_string = ''
+        for key in pre_semester_progress:
+            ret_string += self.print_progress_bar(pre_semester_progress[key][0], pre_semester_progress[key][1],
+                                                  prefix=key + '-->', length=50)
+        return ret_string
+
+    def display_major_requirements(self, semester, add_reqs_abs=True, add_reqs_one=False):
+        """
+        Displays abs_reqs and one_reqs based on major requirments to help students make informed choices to fill
+        their schedules. Uses Color Coding, and automatically sorted prerequisites for courses (optional) to help
+        students make functional choices about their courses.
+        :param semester: Checks to see if there is a semester to reference - defaults to None.
+        :param add_reqs_abs: If True includes all recursively generated requirements for all absolute requirements, and
+        cuts duplicates
+        :param add_reqs_one: If True includes all recursively generated requirements for each course in each grouping
+        of one requirements, and cuts duplicates
+        """
+        # Define Color Key dictionary
+        ckey = {'abs': '\033[1m\033[96m',  # bold cyan
+                'one': '\033[1m\033[91m',  # bold red
+                'prereq': '\033[1m\033[92m',  # bold green
+                'extra': '\033[4m\033[93m',  # underline yellow
+                'END': '\033[0m'}
+
+        # Print Color Key
+        print(ckey['extra'] + 'COLOR KEY' + ckey['END'] + '\n' + ckey['abs'] + 'Absolute Requirments' + ckey[
+            'END'] + '\t\t' + ckey['one'] + 'One Requirments' + ckey['END'] + '\t\t' + ckey[
+                  'prereq'] + 'Prerequisites' + ckey['END'] + '\t\t' + ckey['extra'] + 'Extra' + ckey['END'])
+
+        # Calling get_required_major_courses() function and storing results
+        major_requirements = self.get_required_major_courses(semester, add_reqs_abs, add_reqs_one)
+        absolute = [(course, self.catalog[course]['course_nm']) for course in
+                    major_requirements['major_abs_requirements'][0]]
+        one_offs = major_requirements['major_one_requirements']
+        abs_prereqs = major_requirements['major_abs_prereqs']
+        one_prereqs = major_requirements['major_one_prereqs']
+
+        # Handling abs_requirement
+        print('Of courses that must be taken, you can currently take' + ckey['abs'] + ' these options:' + ckey['END'])
+        for combo in absolute:
+            print(ckey['abs'] + combo[1] + ' - (' + combo[0] + ')' + ckey['END'])
+
+        # Handling abs_requirement prereqs
+        if add_reqs_abs:
+            print('These are also' + ckey['abs'] + ' required courses' + ckey['END'] + ' but you have to take the ' + ckey[
+                'prereq'] + ' prereqs listed ' + ckey['END'] + 'first.')
+
+            for unTakeableCourse in abs_prereqs:
+                print(ckey['abs'] + self.catalog[unTakeableCourse]['course_nm'] + ' - (' + unTakeableCourse + ')' + ckey[
+                    'END'])
+                for prereq in abs_prereqs[unTakeableCourse]:
+                    print('\t\t' + ckey['prereq'] + self.catalog[prereq]['course_nm'] + ' - (' + prereq + ')' + ckey['END'])
+
+        # Handling One-Off requirements
+        print('\nOf One-Off requirements, you can currently take ' + ckey['one'] + ' these options:' + ckey['END'])
+        counter = 0
+        for grouping in one_offs:
+            # Line below generates a combo for every course in the one_off grouping; generated via a list comprehension
+            counter += 1
+            print(ckey['extra'] + 'Grouping ' + str(counter) + ckey['END'])
+            for combo in [(course, self.catalog[course]['course_nm']) for course in grouping]:
+                print(ckey['one'] + combo[1] + ' - (' + combo[0] + ')' + ckey['END'])
+
+        # Handling One-off requirement prereqs
+        if add_reqs_one:
+            # Print clarifying statement
+            print('These are also' + ckey['one'] + ' required courses' + ckey['END'] + ', separated by grouping. You have to take the' +
+                  ckey['prereq'] + ' prereqs listed ' + ckey['END'] + 'first before you take the course. You only '
+                                                                      'need to take one required course per grouping. ')
+            # Walk through groupings
+            for grouping in one_prereqs:
+                print(ckey['extra'] + 'Grouping ' + grouping + ckey['END'])
+                # Walk through 'untakeable courses'
+                for unTakeableCourse in one_prereqs[grouping]:
+                    print(ckey['one'] + self.catalog[unTakeableCourse]['course_nm'] + ' - (' + unTakeableCourse + ')' +
+                          ckey['END'])
+                    # Walk through prereqs for that 'untakeable course'
+                    for prereq in one_prereqs[grouping][unTakeableCourse]:
+                        print('\t\t' + ckey['prereq'] + self.catalog[prereq]['course_nm'] + ' - (' + prereq + ')' +
+                              ckey['END'])
 
     def build_semester(self, semester=None):
-
         """
-        General UI Todos @Adi
-        adi work on :
-        what required abs_reqs and one_offs need to be taken
-        displaying abs_reqs , one_reqs , and pre_req recommendations with colorcoding (& color key)
-        perhaps displaying which prereqs align with which paths and end results so that users can make more informed
-        decisions about their schedues.
-
+        Semester building function - provides recommended & required courses for informed decision making, parses
+        text input for course choices & scheduling, checks course validity, handles scheduling 'edge cases' like
+        LOA's and study aways, all for a single semester, bundled into one function that can be called for each semester.
+        :param semester: Checks to see if there is a semester to reference - defaults to None.
+        :return: Returns validated & verified student choices as a list to be referenced outside the function.
         """
 
-        # TODO: (UI?) implement options for user to call core functionalities - reseting, clearing current semester recommendations, etc.
         if semester is None:  # handle semester==None
             semester = len(self.schedule)
         print('Planning Semester: ', semester + 1)
 
-        # Check to see if you have made the list for this semester, make the lists up to tha point if necessary
+        # Check to see if you have made the list for this semester, make the lists up to that point if necessary
         while len(self.schedule) <= semester:
             self.schedule.append([])
-        # TODO: Display what required credits musts still be taken
-        # TODO: Display what one off seciotns still ened to be taken
         preSemesterProgress = self.get_general_progress(tuple_flag=True)
-        # Present possible options based on major Requirements
+        progress_str = self.display_progress(preSemesterProgress)
+        print(progress_str)
 
-        # DISPLAY_MAJOR_REQUIREMENTS BELOW
-
-        major_requirements = self.get_required_major_courses(semester, add_reqs_abs=True, add_reqs_one=False)
-        absolute = major_requirements['major_abs_requirements']
-        one_offs = major_requirements['major_one_requirements']
-
-        print('Of courses that must be taken, you can currently take these: ')
-        # ge the course names via a list copmrehension
-        print([(course, self.catalog[course]['course_nm']) for course in absolute[0]])
-
-        for section in one_offs:
-            print('\nOf One-Off requirements these are available (options with pre-reqs removed)')
-            # ge the course names via a list copmrehension
-            print([(course, self.catalog[course]['course_nm']) for course in section])
-
-
-        # DISPLAY_MAJOR_REQUIREMENTS ABOVE
-
-
-        # TODO: write helper function that takes a list of courses and nicely displays them
-        choices = []
-        # make sure uppercase because all CRNs are, handle, commas, spaces, or both
+         # make sure uppercase because all CRNs are, handle, commas, spaces, or both
         while True:
             clean_input = True
-            selected_crns = input("\nPlease input CRN's with spaces or commas in between them").upper().replace(',',
-                                                                                                                ' ').split()
-            for crn in selected_crns:
-                # If you type in an invlaid crn
+            selected_crns = input("\nInput '*' to see course requirements/progress or input CRN's with spaces or "
+                                  "commas in between them ").upper().replace(',', ' ').split()
+            # DOo a  variety of cases based on input
+            for crn in list(selected_crns):
+                # DISPLAY DEGREE PROGRESS
+                if '*' in crn:
+                    self.display_major_requirements(semester, add_reqs_abs=True, add_reqs_one=True)
+                    clean_input = False
+                    break
+                # SUBTRACT COURSE
+                if '-' in crn:
+                    selected_crns.remove(crn)
+                    crn = crn.replace('-', '')
+                    if crn not in self.schedule[semester]:
+                        print('You can\'t remove a class you didn\'t take :/')
+                        clean_input = False
+                        break
+                    # Remove the crn if it is there
+                    self.schedule[semester].remove(crn)
+                    print('Succesfully removed: ', crn)
+                    continue
+                # INVALID CRN HANDLING
                 if crn not in self.catalog:
                     print(crn, ' isn\'t a valid CRN!!!')
                     clean_input = False
                     break
-                # If you type a crn that you can't actually take
+                # INVALID COURSE
                 elif not self.valid_course(crn, semester=semester):
                     print(crn, ' can\'t be taken this semester')
                     # TODO return why (return a message from the valid course function)
                     clean_input = False
                     break
-                # TODO : Check for concurrent recs here
-                # TOdo: add mesgae about classes if they have recommended reqs etc and printout if it's valid
+                # TODO : Only checks forst Concurrent Rec
+                # CONCURRENT REC?!
+                elif self.catalog[crn]['con_req'][0]:
+                    con_crn = self.catalog[crn]['con_req'][0][0]
+                    if con_crn not in selected_crns and not self.taken_course(con_crn, semester):
+                        print(color['RED'], crn, 'is missing concurrent req: ', self.catalog[crn]['con_req'][0][0], color['END'])
+                        clean_input = False
+                        break
+                # INFORM REC REQ
+                if self.catalog[crn]['rec_req'][0]:
+                    print(color['RED'], crn, 'has a recommended req: ', self.catalog[crn]['rec_req'][0], color['END'])
+                # TODO: Add option for an override even though it's not a valid crn
             if clean_input:
                 break
-        choices.extend(selected_crns)
+        choices = selected_crns
+        # If there is an loa or study away, prompt for credits
         if 'LOA' in choices:
             choices = ['LOA']
             self.loa_credits = int(input("Input number of credits that you will be taking on your LOA"))
-
         elif 'STUDY_AWAY' in choices:  # adjust for actual CRNs
             choices = ['STUDY_AWAY']
             self.study_away_credits = int(input("Input number of credits that you will be taking on your Study Away"))
         self.schedule[semester].extend(choices)
-        postSemesterProgress =  self.get_general_progress(tuple_flag=True)
-        self.displayProgressDifference(preSemesterProgress, postSemesterProgress)
-        print(self.schedule)
+        # print(self.schedule)
         return choices
 
-    def forge_schedule(self, semester=None):
+    def forge_schedule(self, semester=None, saveDirectory="saved_schedules"):
         """
-        :param semester: Semester for which to forge, is none specified, moves to the next one without any classes
-        :return: returns schedule attribute, which contains all student's course choices for schedule.
+        :param saveDirectory: directory path for where things should be saved
+        :param semester:    Semester for which to forge, is none specified, moves to the next one without any classes
+        :return:            schedule attribute, which contains all student's course choices for schedule.
         """
         if semester is None:
             semester = len(self.schedule) + 1  # real semester not the schedule index (-1)
@@ -398,31 +504,37 @@ class Schedule:
         more_semesters = True
 
         while more_semesters:  # check if major requirements and graduation requirements are
-            print("Building sem: ", semester + 1)
             # Go Build a semester
             self.build_semester(semester)
+
+            # Increment to the next semester
             semester += 1
             # Take input on whether to save or re edit that semester
             continue_response = input(color['RED'] + "Hit enter to progress to semester: " + str(
                 semester + 1) + ", (S) to save, (R) to redo semester, (#) for specific semester, (Q) to quit or a combo "
                                 "ie: (SQ)\n" +
                                       color['END']).strip().upper().replace(' ', '')
-
-            if continue_response == '':  # Enter
+            # Handle different responses
+            if continue_response == '':  # Enter, move to next semester
                 continue
 
-            if 'S' in continue_response:
+            if 'S' in continue_response: # Save the schedule
                 save_name = input("If you would like to name this saved schedule, enter a name: ")
-                # let the save funciton shoose a filename if nothing supplied
-                student_schedule.save_schedule(filenm=save_name, pickled=True)
+                # let the save function shoose a filename if nothing supplied
+                student_schedule.save_schedule(directory=saveDirectory, filenm=save_name, pickled=True)
 
-            if any(map(str.isdigit, continue_response)):
+            if any(map(str.isdigit, continue_response)): # If any number is input (navigate to that semester)
                 input_num = int(re.search(r'\d+', continue_response).group())
                 # As long as input is good, edit that semester
                 if 1 <= input_num <= 10:
-                    semester = input_num-1
-            if 'Q' in continue_response:
+                    semester = input_num - 1
+            if 'Q' in continue_response: # Quit
                 more_semesters = False  # Equivalent of break
+
+            if 'R' in continue_response: # Redo current semester
+                # Redo the semester
+                semester -= 1
+                continue
         return self.schedule
 
 
@@ -440,26 +552,25 @@ if __name__ == '__main__':
              'END': '\033[0m'}
     # Load the majors and course data
     catalog = load_pickle_data('data/catalog4_pickle')
-    # TODO: Adi's note: not sure if we really need to pass in all major information into the schedule class? @Nathan?
-    # NATHAN --Reason for this was because then we can save what was available when someone made their schedule...
-
     majors = load_pickle_data('data/majors3_pickle')
+    saveFolder = "saved_schedules"
 
-    # Load schedule
-    os.chdir("saved_schedules")
+    # Load schedule if there are some available
+    if not os.path.exists(saveFolder):
+        os.makedirs(saveFolder)
+    os.chdir(saveFolder)
     saved_schedules = [file for file in glob.glob("*.pkl")]
     schedule_loaded = False
     initial_schedule = None
     if len(saved_schedules) > 0:
-        # TODO: Allwo import of multiple schedules
         print('We found these saved Schedules, enter the number associated to load, or enter to restart:')
         count = 1
         for saved in saved_schedules:
             print(saved.split('.')[0], '({}), '.format(count), end='')
             count += 1
         file_to_open = input('\nFile Number: ')
+        # Open file, but if nothing input then load a default
         if file_to_open != '':
-            # TODO: HAndle this input better
             new_schedule = load_pickle_data(saved_schedules[int(file_to_open) - 1])
             initial_schedule = new_schedule
             schedule_loaded = True
@@ -469,15 +580,16 @@ if __name__ == '__main__':
                           ['ENGX2000', 'ENGX2001', 'ENGR2510', 'AHSE1515', 'SUST2201']]
         initial_schedule = nathan_courses
 
-    # Make a student Schedule
-    student_schedule = Schedule(majors, catalog, initial_schedule)
+    # hardcoding valid majors
+    # Selct which degree to work towards
+    valid_majors = ['ME', 'ECE']
+    valid_major = False
+    while not valid_major:
+        major_input = input('Are you working towards an ME or ECE degree? Input "ece" or "me" ->').upper()
+        if major_input in valid_majors:
+            valid_major = True
 
-    '''
-    TESTING
-    '''
-    # print(student_schedule.get_required_major_courses())
-    # print(student_schedule.sum_credits(field='ENGR'), 'test')
-    # print(student_schedule.get_general_progress())
-    # student_schedule.build_semester()
-    student_schedule.forge_schedule()
-    # print(student_schedule.valid_course('ENGR3590', 2))
+    # Make a student Schedule
+    # TODO: Somehow save major that a student is working towards... pickle the entire schedule? in filename?
+    student_schedule = Schedule(majors, catalog, initial_schedule, major_nm='ME')
+    student_schedule.forge_schedule(saveDirectory=saveFolder)

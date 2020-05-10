@@ -1,3 +1,7 @@
+"""
+This .py file includes a number of helper functions to be referenced in the main bottom_up.py for scraping the Olin
+Course Catalog, storing course information, storing major information, and saving and accessing pickled data.
+"""
 from bs4 import BeautifulSoup as bs
 from time import sleep
 import requests
@@ -8,18 +12,29 @@ from pickle import dump, load
 import sys
 
 
+
+
 class Major:
     """
-    This class is used to store information about majors
+    This class is used to store information about the Major options that can be pursued at Olin.
+    Info is stored as attributes of a Major object.
     """
 
     def __init__(self, name, reqs_list):
-        self.name = name
-        self.abs_reqs = [reqs_list[0]]
+        """
+        Constructor - saves class attributes based on inputs
+        """
+        self.name = name # Major Name
+        self.abs_reqs = [reqs_list[0]] # Absoulute requirements - all of these must be taken.
         # reqs_list.pop(0)
-        self.one_reqs = []
+        self.one_reqs = [] # 'One Requirements' - at least one course and all its prereqs from each grouping must be taken.
         for group in reqs_list:
-            self.one_reqs.append(group)  # list of lists for one required Courses
+            self.one_reqs.append(group)  # Saves as a list of lists (groupings)
+
+
+"""
+Below are 2 Pickling Helper Functions
+"""
 
 def pickle_data(file_path, data, overwrite):
     """
@@ -52,10 +67,15 @@ def load_pickle_data(file_path):
     return pickled_data
 
 
+"""
+Below are a number of Parsing and scraping Helper Functions that make break down online information retrieval and 
+storage into a number of smaller functions.  
+"""
+
 def parse_credit_dict(credit_dictionary):
     """
-    :param credit_dictionary:
-    :return:
+    :param credit_dictionary: Takes in a credit dictionary
+    :return: Doesn't return anything
     """
     # TODO; THIS ISN'T USED, SEEMED REDUNDANT, HOWEVER, SUS CREDITS NEED TO BE SPLIT OUT NOW ELSEWHERE(a get total fucntion)
     admn_crd = 0
@@ -85,16 +105,19 @@ def parse_credit_dict(credit_dictionary):
 
 def course_dict(crn, course_nm, pre_req, co_req, con_req, rec_req, desc, credit_dict, hours, term_requirement=None,
                 grade_limit=None, size=32, fall=True, spring=True):
-    course = {'crn': crn, 'course_nm': course_nm, 'desc': desc, 'pre_req': pre_req, 'hours': hours, 'term_requirement': term_requirement,
+    """
+    Generates Dictionary based on function inputs. Sets defaults for quicker inputs and dictionary generation.
+    """
+    return {'crn': crn, 'course_nm': course_nm, 'desc': desc, 'pre_req': pre_req, 'hours': hours, 'term_requirement': term_requirement,
               'grade_limit': grade_limit, 'size': size, 'fall': fall, 'spring': spring, 'co_req': co_req,
               'con_req': con_req, 'rec_req': rec_req, 'credit_dict': credit_dict}
-    return course
 
 
 def parse_cred(credit_div):
     """
+    Helper function to create and returns a credit dictionary by scraping information from an individual course information page
     :param credit_div:
-    :return:
+    :return: A credit dictionary about the credit types that the course satisfies
     """
     if len(credit_div) == 0:
         return {}
@@ -121,8 +144,8 @@ def parse_cred(credit_div):
 
 def parse_req(req_div):
     """
-    Parse requisites for all different types of requisites
-    :param req_div:
+    Helper function to parse and return requisites for a course
+    :param req_div: Takes in a 'req div' - a div tag within the course info page that contains requisite information
     :return: a list that contains what requisites if any
     """
     if len(req_div) == 0 or req_div[0].findChild() is None:  # if there is no data or there was no tag found
@@ -148,6 +171,11 @@ def parse_req(req_div):
 
 
 def parse_hrs(hrs_div, dict=True):
+    """
+    Returns an integer of hours associated with a certain class
+    :param hrs_div: Takes in course info page div containing hours information
+    :return: Returns either a dictionary or integer of hour breakdown of course
+    """
     if dict:
         hrs = {}
     else:
@@ -169,6 +197,10 @@ def parse_hrs(hrs_div, dict=True):
 
 
 def parse_info(info_div):
+    """
+    :param info_div: Takes in course info page div on general course information
+    :returns: Info directly scraped from page as a string
+    """
     if len(info_div) == 0:
         return ''
     info = info_div[0].getText()
@@ -176,6 +208,12 @@ def parse_info(info_div):
 
 
 def get_group_links(page_base_link, other_link):
+    """
+    Helper function to get grouping links to access later
+    :param page_base_link: Base link for page to scrape from
+    :param other_link: Sub link to reference for scraping
+    :return: Returns groupLst, a list of dictionaries with URLs to access each group
+    """
     # Set up Scraping links for Beautiful Soup
     root_link = page_base_link + other_link
     # Extract the contents of the link
@@ -195,6 +233,14 @@ def get_group_links(page_base_link, other_link):
 
 
 def parse_bulid_course(a_course_link, crn):
+    """
+    Builds a course using the helper functions from above, and returns a course_dict from the scraped info.
+    A quick note: this function is very, very specific to Olin's website structure and pedagogical course organizational
+    structure. It heavily references and relies on Olin's requisite names and types to organize requisites and credits.
+    :param a_course_link: Uses the course link to retrieve and scrape all the information.
+    :param crn: Takes the CRN as an input and references it only for the dictionary output.
+    :return: returns the course dictionary for the course
+    """
     print(crn)
     # TODO: THE NEAME OF THE COURSE ALSO NEEDS TO BE PARSED!!!!!
     course_page = requests.get(a_course_link)
@@ -224,6 +270,21 @@ def parse_bulid_course(a_course_link, crn):
 
 
 def collect_majors(root_lnk, major_link, major_nm):
+    """
+        Similar to the previous function, this one builds a major using the helper functions from above, but instead
+        returns a Major object, as defined above.
+        A quick note: this function is quite specific to the way Olin splits up its major and the way Olin and how it
+        displays major information on its website. It also assumes that each major will have its own dedicated webpage
+        (which is only true for Olin's 2 large majors, ECE & MechE.) Thus we can only work with MechE majors and ECE
+        majors right now - no E:C, E:D, E:R, etc.
+
+        By making the above assumption, we can make a further assumption that the first table on the page is for
+        storing the absolute course requirements of that major, and second table is for storing one_requirements.
+        :param root_lnk: references as root link for general course catalog webpage
+        :param major_link: references as link to individual major webpage, to scrape info from
+        :param major_nm: Only referenced for output in creating the Major Object
+        :return: returns a Major object generated based on the scraped info.
+    """
     link_page = requests.get(root_lnk + major_link)
     soup = bs(link_page.content, 'html.parser')
     groups_rec_names = soup.find_all('h3', attrs={
